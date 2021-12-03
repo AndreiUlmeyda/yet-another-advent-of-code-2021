@@ -1,5 +1,7 @@
 module Main where
 
+import Data.Bifunctor (bimap)
+
 main :: IO ()
 main = interact (show . uncurry (*) . sumDistances . map (toTupleOfDistances . words) . lines)
 
@@ -10,7 +12,7 @@ main = interact (show . uncurry (*) . sumDistances . map (toTupleOfDistances . w
 sumDistances :: [(Int, Int)] -> (Int, Int)
 sumDistances = foldl sumDistances' (0, 0)
   where
-    sumDistances' firstTuple secondTuple = (fst firstTuple + fst secondTuple, snd firstTuple + snd secondTuple)
+    sumDistances' firstTuple secondTuple = bimap (fst firstTuple +) (snd firstTuple +) secondTuple
 
 toTupleOfDistances :: [String] -> (Int, Int)
 toTupleOfDistances directionAndDistance
