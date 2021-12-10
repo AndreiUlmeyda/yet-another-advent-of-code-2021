@@ -4,7 +4,8 @@ import Lib
   ( solutionDay1Part1,
     solutionDay1Part2,
     solutionDay2Part1,
+    solutionDay2Part2,
   )
 
 main :: IO ()
-main = interact (show . solutionDay2Part1 . lines)
+main = interact (show . solutionDay2Part2 . lines)
