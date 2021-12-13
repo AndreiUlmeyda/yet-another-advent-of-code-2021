@@ -46,14 +46,15 @@ solutionDay2Part2 = computeAim . map (toSubMovementPlus . words)
 -- solutionDay2Part2 = multiplyDirections . sumDistancesConsideringAim . map (toSubMovement . words)
 
 computeAim :: [SubMovementPlus] -> [SubMovementPlus]
-computeAim [] = []
-computeAim [MkSubMovementPlus direction magnitude _] = [MkSubMovementPlus direction magnitude 0]
-computeAim _ = []
+computeAim inputMovements
+  | [] <- inputMovements = []
+  | [MkSubMovementPlus direction magnitude _] <- inputMovements = [MkSubMovementPlus direction magnitude 0]
+  | otherwise = MkSubMovementPlus (direction firstMovement) (magnitude firstMovement) 0 : computeAim' (tail inputMovements)
+  where
+    firstMovement = head inputMovements
 
--- computeAim (MkSubMovement x y aim)
---   | y > 0 = MkSubMovement x y (aim + 5)
---   | y < 0 = MkSubMovement x y (aim - 3)
---   | otherwise = MkSubMovement x y aim
+computeAim' :: [SubMovementPlus] -> [SubMovementPlus]
+computeAim' = id
 
 sumDistancesConsideringAim :: [SubMovement] -> SubMovement
 sumDistancesConsideringAim = foldr sumDistancesConsideringAim' (MkSubMovement 0 0)

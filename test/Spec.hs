@@ -25,23 +25,24 @@ main = hspec $ do
       --   solutionDay2Part2 dayTwoSampleData `shouldBe` 900 -- full data result ...
   describe "parsing sub movements" $ do
     it "given a forward direction and magnitude 5 should parse them" $ do
-      let input = ["forward", "5"]
-       in toSubMovementPlus input `shouldBe` MkSubMovementPlus Forward 5 0
+      toSubMovementPlus ["forward", "5"] `shouldBe` MkSubMovementPlus Forward 5 0
     it "given a downward direction and magnitude 1 should parse them" $ do
-      let input = ["down", "1"]
-       in toSubMovementPlus input `shouldBe` MkSubMovementPlus Down 1 0
+      toSubMovementPlus ["down", "1"] `shouldBe` MkSubMovementPlus Down 1 0
     it "given an upward direction and magnitude 7 should parse them" $ do
-      let input = ["up", "7"]
-       in toSubMovementPlus input `shouldBe` MkSubMovementPlus Up 7 0
+      toSubMovementPlus ["up", "7"] `shouldBe` MkSubMovementPlus Up 7 0
 
--- describe "computing the aim" $ do
---   it "given a forward direction should leave the aim unchanged" $ do
---     let movement = MkSubMovement 5 0
---      in computeAim movement `shouldBe` movement
---   it "given a downward direction should increase the aim by 5" $ do
---     computeAim (MkSubMovement 0 1) `shouldBe` MkSubMovement 0 1
---   it "given an upward direction should decrease the aim by 3" $ do
---     computeAim (MkSubMovement 0 (-5)) `shouldBe` MkSubMovement 0 (-5)
+  describe "computing the aim" $ do
+    it "given the empty list should leave the input unchanged" $ do
+      computeAim [] `shouldBe` []
+    it "given a single entry should set the aim to zero" $ do
+      computeAim [MkSubMovementPlus Forward 1 2] `shouldBe` [MkSubMovementPlus Forward 1 0]
+    it "given two entries should set the first aim to zero" $ do
+      let movement = MkSubMovementPlus Forward 1 2
+       in computeAim [movement, movement] `shouldBe` [MkSubMovementPlus Forward 1 0, movement]
+
+-- it "given a second entry with direction down should increase its aim by its magnitude" $ do
+--   let movement = MkSubMovementPlus Down 1 2
+--    in computeAim [movement, movement] `shouldBe` [MkSubMovementPlus Forward 1 0, MkSubMovementPlus Down 1 3]
 
 dayOneSampleData :: [String]
 dayOneSampleData = ["199", "200", "208", "210", "200", "207", "240", "269", "260", "263"]
