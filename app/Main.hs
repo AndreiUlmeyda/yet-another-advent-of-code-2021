@@ -9,3 +9,5 @@ import Lib
 
 main :: IO ()
 main = interact (show . solutionDay2Part2 . lines)
+
+-- TODO move solutions to separate modules, separate tests as well

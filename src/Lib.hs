@@ -8,6 +8,7 @@ module Lib
     SubMovementPlus (MkSubMovementPlus),
     SubDirection (Forward, Down, Up),
     toSubMovementPlus,
+    sumDistancesConsideringAim,
   )
 where
 
@@ -40,26 +41,39 @@ solutionDay2Part1 = multiplyDirections . sumDistances . map (toSubMovement . wor
 multiplyDirections :: SubMovement -> Int
 multiplyDirections (MkSubMovement x y) = x * y
 
-solutionDay2Part2 :: [String] -> [SubMovementPlus]
-solutionDay2Part2 = computeAim . map (toSubMovementPlus . words)
+solutionDay2Part2 :: [String] -> Int
+solutionDay2Part2 = uncurry (*) . sumDistancesConsideringAim (0, 0) . computeAim . firstAimZero . map (toSubMovementPlus . words)
 
--- solutionDay2Part2 = multiplyDirections . sumDistancesConsideringAim . map (toSubMovement . words)
+firstAimZero :: [SubMovementPlus] -> [SubMovementPlus]
+firstAimZero movements
+  | (MkSubMovementPlus direction magnitude _) : rest <- movements = MkSubMovementPlus direction magnitude 0 : rest
+  | otherwise = movements
 
 computeAim :: [SubMovementPlus] -> [SubMovementPlus]
-computeAim inputMovements
-  | [] <- inputMovements = []
-  | [MkSubMovementPlus direction magnitude _] <- inputMovements = [MkSubMovementPlus direction magnitude 0]
-  | otherwise = MkSubMovementPlus (direction firstMovement) (magnitude firstMovement) 0 : computeAim' (tail inputMovements)
-  where
-    firstMovement = head inputMovements
+computeAim movements
+  | firstMovement : secondMovement : rest <- movements = firstMovement : computeAim (updateAimWithPreviousMovement firstMovement secondMovement : rest)
+  | otherwise = movements
 
-computeAim' :: [SubMovementPlus] -> [SubMovementPlus]
-computeAim' = id
+updateAimWithPreviousMovement :: SubMovementPlus -> SubMovementPlus -> SubMovementPlus
+updateAimWithPreviousMovement firstMovement secondMovement
+  | MkSubMovementPlus Down secondMagnitude secondAim <- secondMovement = MkSubMovementPlus Down secondMagnitude (aim firstMovement + secondMagnitude)
+  | MkSubMovementPlus Up secondMagnitude secondAim <- secondMovement = MkSubMovementPlus Up secondMagnitude (aim firstMovement - secondMagnitude)
+  | otherwise = MkSubMovementPlus (direction secondMovement) (magnitude secondMovement) (aim firstMovement)
 
-sumDistancesConsideringAim :: [SubMovement] -> SubMovement
-sumDistancesConsideringAim = foldr sumDistancesConsideringAim' (MkSubMovement 0 0)
+aimDependingOnDirection :: SubMovementPlus -> SubMovementPlus
+aimDependingOnDirection movement
+  | MkSubMovementPlus Down magnitude aim <- movement = MkSubMovementPlus Down magnitude (aim + magnitude)
+  | MkSubMovementPlus Up magnitude aim <- movement = MkSubMovementPlus Up magnitude (aim - magnitude)
+  | otherwise = movement
+
+sumDistancesConsideringAim :: (Int, Int) -> [SubMovementPlus] -> (Int, Int)
+sumDistancesConsideringAim position movements
+  | [] <- movements = position
+  | MkSubMovementPlus Forward magnitude aim : rest <- movements = sumDistancesConsideringAim (newX, newY) rest
+  | otherwise = sumDistancesConsideringAim position (tail movements)
   where
-    sumDistancesConsideringAim' firstMovement secondMovement = MkSubMovement (xDirection firstMovement + xDirection secondMovement) (yDirection firstMovement + yDirection secondMovement)
+    newX = fst position + magnitude (head movements)
+    newY = snd position + (magnitude (head movements) * aim (head movements))
 
 sumDistances :: [SubMovement] -> SubMovement
 sumDistances = foldl sumDistances' (MkSubMovement 0 0)

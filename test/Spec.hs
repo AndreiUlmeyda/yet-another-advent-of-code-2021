@@ -7,6 +7,7 @@ import Lib
     solutionDay1Part2,
     solutionDay2Part1,
     solutionDay2Part2,
+    sumDistancesConsideringAim,
     toSubMovementPlus,
   )
 import Test.Hspec (describe, hspec, it, shouldBe)
@@ -21,28 +22,40 @@ main = hspec $ do
   describe "day 2" $ do
     it "the solution to part one with sample data should be 150" $ do
       solutionDay2Part1 dayTwoSampleData `shouldBe` 150 -- full data result 1727835
-      -- it "the solution to part two with sample data should be x" $ do
-      --   solutionDay2Part2 dayTwoSampleData `shouldBe` 900 -- full data result ...
+    it "the solution to part two with sample data should be x" $ do
+      solutionDay2Part2 dayTwoSampleData `shouldBe` 900 -- full data result 1544000595
   describe "parsing sub movements" $ do
     it "given a forward direction and magnitude 5 should parse them" $ do
       toSubMovementPlus ["forward", "5"] `shouldBe` MkSubMovementPlus Forward 5 0
+
     it "given a downward direction and magnitude 1 should parse them" $ do
       toSubMovementPlus ["down", "1"] `shouldBe` MkSubMovementPlus Down 1 0
+
     it "given an upward direction and magnitude 7 should parse them" $ do
       toSubMovementPlus ["up", "7"] `shouldBe` MkSubMovementPlus Up 7 0
 
   describe "computing the aim" $ do
     it "given the empty list should leave the input unchanged" $ do
       computeAim [] `shouldBe` []
-    it "given a single entry should set the aim to zero" $ do
-      computeAim [MkSubMovementPlus Forward 1 2] `shouldBe` [MkSubMovementPlus Forward 1 0]
-    it "given two entries should set the first aim to zero" $ do
-      let movement = MkSubMovementPlus Forward 1 2
-       in computeAim [movement, movement] `shouldBe` [MkSubMovementPlus Forward 1 0, movement]
 
--- it "given a second entry with direction down should increase its aim by its magnitude" $ do
---   let movement = MkSubMovementPlus Down 1 2
---    in computeAim [movement, movement] `shouldBe` [MkSubMovementPlus Forward 1 0, MkSubMovementPlus Down 1 3]
+    it "given a second entry with direction down should result in an aim which is the sum of the previous aim and the current magnitude" $ do
+      computeAim [MkSubMovementPlus Forward 1 6, MkSubMovementPlus Down 3 2] `shouldBe` [MkSubMovementPlus Forward 1 6, MkSubMovementPlus Down 3 9]
+
+    it "given a second entry with direction forward should keep the aim of the first entry" $ do
+      computeAim [MkSubMovementPlus Forward 1 6, MkSubMovementPlus Forward 3 0] `shouldBe` [MkSubMovementPlus Forward 1 6, MkSubMovementPlus Forward 3 6]
+
+    it "given a second entry with direction up should result in an aim where the current magnitude is subtracted from the previous aim" $ do
+      computeAim [MkSubMovementPlus Forward 1 6, MkSubMovementPlus Up 3 2] `shouldBe` [MkSubMovementPlus Forward 1 6, MkSubMovementPlus Up 3 3]
+
+  describe "computing the position considering aim" $ do
+    it "given an empty list of movements should return the starting position" $ do
+      sumDistancesConsideringAim (0, 0) [] `shouldBe` (0, 0)
+
+    it "given one movement forward without aim should add x positions" $ do
+      sumDistancesConsideringAim (0, 0) [MkSubMovementPlus Forward 1 0] `shouldBe` (1, 0)
+
+    it "given one movement forward the aim should also modify y position by magnitude times aim" $ do
+      sumDistancesConsideringAim (0, 0) [MkSubMovementPlus Forward 2 3] `shouldBe` (2, 6)
 
 dayOneSampleData :: [String]
 dayOneSampleData = ["199", "200", "208", "210", "200", "207", "240", "269", "260", "263"]
