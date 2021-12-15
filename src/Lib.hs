@@ -12,8 +12,6 @@ module Lib
   )
 where
 
-import Data.Bifunctor (bimap)
-
 data SubMovement = MkSubMovement
   { xDirection :: Int,
     yDirection :: Int
