@@ -9,6 +9,7 @@ module Day02
   )
 where
 
+-- ######### Part One #########
 data SubMovement = MkSubMovement
   { xDirection :: Int,
     yDirection :: Int
@@ -36,6 +37,7 @@ toSubMovement directionAndDistance
     direction = head directionAndDistance
     distance = read (head (tail directionAndDistance))
 
+-- ######### Part Two #########
 solutionDay2Part2 :: [String] -> Int
 solutionDay2Part2 = uncurry (*) . sumDistancesConsideringAim (0, 0) . computeAim . firstAimZero . map (toSubMovementPlus . words)
 

@@ -8,8 +8,13 @@ import Day02
   ( solutionDay2Part1,
     solutionDay2Part2,
   )
+import Day03
+  ( solutionDay3Part1,
+    solutionDay3Part2,
+  )
 
 main :: IO ()
 main = interact (show . solutionDay2Part2 . lines)
 
 -- TODO separate test files in line with modules
+-- TODO Substitute Text for String

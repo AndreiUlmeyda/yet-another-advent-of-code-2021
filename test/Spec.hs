@@ -11,6 +11,10 @@ import Day02
     sumDistancesConsideringAim,
     toSubMovementPlus,
   )
+import Day03
+  ( solutionDay3Part1,
+    solutionDay3Part2,
+  )
 import Test.Hspec (describe, hspec, it, shouldBe)
 
 main :: IO ()
@@ -25,6 +29,9 @@ main = hspec $ do
       solutionDay2Part1 dayTwoSampleData `shouldBe` 150 -- full data result 1727835
     it "the solution to part two with sample data should be x" $ do
       solutionDay2Part2 dayTwoSampleData `shouldBe` 900 -- full data result 1544000595
+  describe "day 3" $ do
+    it "the solution to part one with sample data should be xxx" $ do
+      solutionDay3Part1 dayThreeSampleData `shouldBe` 0 -- full data result 1727835
   describe "parsing sub movements" $ do
     it "given a forward direction and magnitude 5 should parse them" $ do
       toSubMovementPlus ["forward", "5"] `shouldBe` MkSubMovementPlus Forward 5 0
@@ -63,3 +70,19 @@ dayOneSampleData = ["199", "200", "208", "210", "200", "207", "240", "269", "260
 
 dayTwoSampleData :: [String]
 dayTwoSampleData = ["forward 5", "down 5", "forward 8", "up 3", "down 8", "forward 2"]
+
+dayThreeSampleData :: [String]
+dayThreeSampleData =
+  [ "00100",
+    "11110",
+    "10110",
+    "10111",
+    "10101",
+    "01111",
+    "00111",
+    "11100",
+    "10000",
+    "11001",
+    "00010",
+    "01010"
+  ]
