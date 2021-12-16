@@ -12,7 +12,8 @@ import Day02
     toSubMovementPlus,
   )
 import Day03
-  ( solutionDay3Part1,
+  ( addElementwise,
+    solutionDay3Part1,
     solutionDay3Part2,
   )
 import Test.Hspec (describe, hspec, it, shouldBe)
@@ -27,11 +28,11 @@ main = hspec $ do
   describe "day 2" $ do
     it "the solution to part one with sample data should be 150" $ do
       solutionDay2Part1 dayTwoSampleData `shouldBe` 150 -- full data result 1727835
-    it "the solution to part two with sample data should be x" $ do
+    it "the solution to part two with sample data should be 900" $ do
       solutionDay2Part2 dayTwoSampleData `shouldBe` 900 -- full data result 1544000595
   describe "day 3" $ do
-    it "the solution to part one with sample data should be xxx" $ do
-      solutionDay3Part1 dayThreeSampleData `shouldBe` 0 -- full data result 1727835
+    it "the solution to part one with sample data should be 198" $ do
+      solutionDay3Part1 dayThreeSampleData `shouldBe` 198 -- full data result
   describe "parsing sub movements" $ do
     it "given a forward direction and magnitude 5 should parse them" $ do
       toSubMovementPlus ["forward", "5"] `shouldBe` MkSubMovementPlus Forward 5 0
@@ -64,6 +65,16 @@ main = hspec $ do
 
     it "given one movement forward the aim should also modify y position by magnitude times aim" $ do
       sumDistancesConsideringAim (0, 0) [MkSubMovementPlus Forward 2 3] `shouldBe` (2, 6)
+
+  describe "adding diagnostic numbers" $ do
+    it "when one number is zero, the result should be equal to the other one" $
+      do
+        addElementwise [0, 0, 0] [1, 1, 1]
+        `shouldBe` [1, 1, 1]
+    it "each element of the first number should be added to the corresponding element of the second one" $
+      do
+        addElementwise [1, 2, 999] [-100, 2, 1]
+        `shouldBe` [-99, 4, 1000]
 
 dayOneSampleData :: [String]
 dayOneSampleData = ["199", "200", "208", "210", "200", "207", "240", "269", "260", "263"]
