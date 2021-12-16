@@ -1,10 +1,11 @@
-import Lib
+import Day01
+  ( solutionDay1Part1,
+    solutionDay1Part2,
+  )
+import Day02
   ( SubDirection (Down, Forward, Up),
-    SubMovement (MkSubMovement),
     SubMovementPlus (MkSubMovementPlus),
     computeAim,
-    solutionDay1Part1,
-    solutionDay1Part2,
     solutionDay2Part1,
     solutionDay2Part2,
     sumDistancesConsideringAim,
