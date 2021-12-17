@@ -32,7 +32,9 @@ main = hspec $ do
       solutionDay2Part2 dayTwoSampleData `shouldBe` 900 -- full data result 1544000595
   describe "day 3" $ do
     it "the solution to part one with sample data should be 198" $ do
-      solutionDay3Part1 dayThreeSampleData `shouldBe` 198 -- full data result
+      solutionDay3Part1 dayThreeSampleData `shouldBe` 198 -- full data result 3309596
+    it "the solution to part one with another set of sample data should be 3309596" $ do
+      solutionDay3Part1 dayThreeSampleData2 `shouldBe` 3879216
   describe "parsing sub movements" $ do
     it "given a forward direction and magnitude 5 should parse them" $ do
       toSubMovementPlus ["forward", "5"] `shouldBe` MkSubMovementPlus Forward 5 0

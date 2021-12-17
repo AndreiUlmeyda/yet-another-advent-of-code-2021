@@ -28,7 +28,7 @@ biggerThanHalfTheInputLength inputStrings = map ((>= halfTheInputLength) . fromI
     halfTheInputLength = fromIntegral (length inputStrings) / 2 :: Float
 
 sumUpElementwise :: [[Int]] -> [Int]
-sumUpElementwise = foldr addElementwise [0, 0, 0, 0, 0]
+sumUpElementwise = foldr addElementwise (repeat 0)
 
 toDiagnosticNumbers :: [[Char]] -> [[Int]]
 toDiagnosticNumbers = map (map digitToInt)
