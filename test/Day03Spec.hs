@@ -1,7 +1,7 @@
 module Day03Spec (spec) where
 
 import Day03 (addElementwise, solutionDay3Part1)
-import Test.Hspec (Spec, context, describe, hspec, it, shouldBe)
+import Test.Hspec (Spec, context, describe, it, shouldBe)
 
 spec :: Spec
 spec = do

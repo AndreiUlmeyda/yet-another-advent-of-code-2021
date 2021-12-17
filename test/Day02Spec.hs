@@ -9,7 +9,7 @@ import Day02
     sumDistancesConsideringAim,
     toSubMovementPlus,
   )
-import Test.Hspec (Spec, context, describe, hspec, it, shouldBe)
+import Test.Hspec (Spec, context, describe, it, shouldBe)
 
 spec :: Spec
 spec = do

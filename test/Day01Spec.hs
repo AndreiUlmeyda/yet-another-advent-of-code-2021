@@ -4,7 +4,7 @@ import Day01
   ( solutionDay1Part1,
     solutionDay1Part2,
   )
-import Test.Hspec (Spec, context, describe, hspec, it, shouldBe)
+import Test.Hspec (Spec, context, describe, it, shouldBe)
 
 spec :: Spec
 spec = do
