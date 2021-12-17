@@ -16,5 +16,4 @@ import Day03
 main :: IO ()
 main = interact (show . solutionDay3Part1 . lines)
 
--- TODO separate test files in line with modules
 -- TODO Substitute Text for String
