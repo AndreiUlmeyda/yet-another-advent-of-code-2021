@@ -23,7 +23,7 @@ pairWithNegation :: [Bool] -> ([Bool], [Bool])
 pairWithNegation input = (input, map not input)
 
 biggerThanHalfTheInputLength :: [String] -> [Int] -> [Bool]
-biggerThanHalfTheInputLength inputStrings summedUpBits = map (>= halfTheInputLength) (map fromIntegral summedUpBits)
+biggerThanHalfTheInputLength inputStrings = map ((>= halfTheInputLength) . fromIntegral)
   where
     halfTheInputLength = fromIntegral (length inputStrings) / 2 :: Float
 
