@@ -3,6 +3,7 @@ module Day03
     solutionDay3Part2,
     addElementwise,
     filterDiagnosticNumbers,
+    toDiagnosticNumbers,
   )
 where
 
@@ -26,7 +27,7 @@ addElementwise :: [Int] -> [Int] -> [Int]
 addElementwise = zipWith (+)
 
 biggerThanHalfTheInputLength :: ([Int], Int) -> [Bool]
-biggerThanHalfTheInputLength (number, originalInputLength) = map ((> halfTheInputLength) . fromIntegral) number
+biggerThanHalfTheInputLength (number, originalInputLength) = map ((>= halfTheInputLength) . fromIntegral) number
   where
     halfTheInputLength = fromIntegral originalInputLength / 2
 
@@ -47,14 +48,14 @@ toZerosAndOnes = map (\boolean -> if boolean then 1 else 0)
 solutionDay3Part2 = transpose . toDiagnosticNumbers
 
 filterDiagnosticNumbers :: [[Int]] -> [Int]
-filterDiagnosticNumbers numbers = filterDiagnosticNumbers' 0 (mostCommonDigitsOf numbers) numbers
+filterDiagnosticNumbers = filterDiagnosticNumbers' 0
 
-filterDiagnosticNumbers' :: Int -> [Int] -> [[Int]] -> [Int]
-filterDiagnosticNumbers' index mostCommonDigits numbers
+filterDiagnosticNumbers' :: Int -> [[Int]] -> [Int]
+filterDiagnosticNumbers' index numbers
   | [singleNumber] <- numbers = singleNumber
-  | otherwise = filterDiagnosticNumbers' (index + 1) mostCommonDigits $ filter numberMatchesMostCommonOne numbers
+  | otherwise = filterDiagnosticNumbers' (index + 1) $ filter numberMatchesMostCommonOne numbers
   where
-    numberMatchesMostCommonOne number = number !! index == mostCommonDigits !! index
+    numberMatchesMostCommonOne number = number !! index == mostCommonDigitsOf numbers !! index
 
 -- filter numbers by digit at index
 -- -> numbers, digit, index

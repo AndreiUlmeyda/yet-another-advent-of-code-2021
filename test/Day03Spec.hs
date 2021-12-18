@@ -1,6 +1,6 @@
 module Day03Spec (spec) where
 
-import Day03 (addElementwise, filterDiagnosticNumbers, solutionDay3Part1, solutionDay3Part2)
+import Day03 (addElementwise, filterDiagnosticNumbers, solutionDay3Part1, solutionDay3Part2, toDiagnosticNumbers)
 import Test.Hspec (Spec, context, describe, it, shouldBe)
 
 spec :: Spec
@@ -29,25 +29,31 @@ spec = do
           `shouldBe` [-99, 4, 1000]
 
   describe "filtering diagnostic numbers" $ do
-    context "" $
-      it "should do..." $ do
+    context "given 3 numbers" $
+      it "should select the second one" $ do
         filterDiagnosticNumbers [[1, 0], [1, 1], [0, 1]] `shouldBe` [1, 1]
+    context "given sample data" $
+      it "should be [1, 0, 1, 1, 1]" $ do
+        filterDiagnosticNumbers (toDiagnosticNumbers dayThreeSampleData) `shouldBe` [1, 0, 1, 1, 1]
 
 dayThreeSampleData :: [String]
 dayThreeSampleData =
-  [ "00100",
-    "11110",
-    "10110",
-    "10111",
-    "10101",
-    "01111",
-    "00111",
-    "11100",
-    "10000",
-    "11001",
-    "00010",
-    "01010"
+  [ "00100", -- 1
+    "11110", -- 2
+    "10110", -- ==> bingo
+    "10111", -- 5
+    "10101", -- 4
+    "01111", -- 1
+    "00111", -- 1
+    "11100", -- 2
+    "10000", -- 3
+    "11001", -- 2
+    "00010", -- 1
+    "01010" -- 1
   ]
+
+--   10110
+-- ==>> most common digits are computed each round
 
 dayThreeSampleData2 :: [String]
 dayThreeSampleData2 =
