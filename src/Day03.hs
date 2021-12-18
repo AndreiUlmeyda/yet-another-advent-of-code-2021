@@ -11,15 +11,16 @@ import Data.List (transpose)
 import Data.Tuple.Extra (both)
 
 solutionDay3Part1 :: [[Char]] -> Int
-solutionDay3Part1 = uncurry (*) . both toNumber . pairWithNegation . mostCommonDigits . toDiagnosticNumbers
+solutionDay3Part1 = uncurry (*) . both toNumber . pairWithNegation . mostCommonDigitsOf . toDiagnosticNumbers
 
-mostCommonDigits = biggerThanHalfTheInputLength . sumUpElementwise
+mostCommonDigitsOf :: [[Int]] -> [Int]
+mostCommonDigitsOf = toZerosAndOnes . biggerThanHalfTheInputLength . elementwiseSumAndLenght
 
 toDiagnosticNumbers :: [[Char]] -> [[Int]]
 toDiagnosticNumbers = map (map digitToInt)
 
-sumUpElementwise :: [[Int]] -> ([Int], Int)
-sumUpElementwise a = (foldr addElementwise (repeat 0) a, length a)
+elementwiseSumAndLenght :: [[Int]] -> ([Int], Int)
+elementwiseSumAndLenght numbers = (foldr addElementwise (repeat 0) numbers, length numbers)
 
 addElementwise :: [Int] -> [Int] -> [Int]
 addElementwise = zipWith (+)
@@ -29,11 +30,14 @@ biggerThanHalfTheInputLength (number, originalInputLength) = map ((>= halfTheInp
   where
     halfTheInputLength = fromIntegral originalInputLength / 2
 
-pairWithNegation :: [Bool] -> ([Bool], [Bool])
-pairWithNegation input = (input, map not input)
+pairWithNegation :: [Int] -> ([Int], [Int])
+pairWithNegation input = (input, map flipZerosAndOnes input)
 
-toNumber :: [Bool] -> Int
-toNumber = sum . zipWith (*) powersOfTwo . toZerosAndOnes . reverse
+flipZerosAndOnes :: (Eq a, Num a, Num p) => a -> p
+flipZerosAndOnes digit = if digit == 0 then 1 else 0
+
+toNumber :: [Int] -> Int
+toNumber = sum . zipWith (*) powersOfTwo . reverse
   where
     powersOfTwo = iterate (* 2) 1
 
@@ -43,16 +47,17 @@ toZerosAndOnes = map (\boolean -> if boolean then 1 else 0)
 solutionDay3Part2 = transpose . toDiagnosticNumbers
 
 filterDiagnosticNumbers :: [[Int]] -> [Int]
-filterDiagnosticNumbers = filterDiagnosticNumbers' 0 mostCommonDigits
-  where
-    mostCommonDigits = []
+filterDiagnosticNumbers numbers = filterDiagnosticNumbers' 0 (mostCommonDigitsOf numbers) numbers
 
-filterDiagnosticNumbers' _ _ _ = []
+filterDiagnosticNumbers' :: Int -> [Int] -> [[Int]] -> [Int]
+filterDiagnosticNumbers' index mostCommonDigits numbers
+  | [singleNumber] <- numbers = singleNumber
+  | otherwise = filterDiagnosticNumbers' (index + 1) mostCommonDigits $ filter (const True) []
 
 -- filter numbers by digit at index
 -- -> numbers, digit, index
 
 -- from one iteration to the next
 --    numbers -> parameter
---    digit -> computed once, declare in outer scope, pass to abc'
+--    digit -> compute once, declare in outer scope, pass to abc'
 --    index -> increases by 1 (parameter?)
