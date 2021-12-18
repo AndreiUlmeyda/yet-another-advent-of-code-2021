@@ -31,7 +31,7 @@ spec = do
   describe "filtering diagnostic numbers" $ do
     context "" $
       it "should do..." $ do
-        filterDiagnosticNumbers [[1, 0], [1, 1], [0, 1]] `shouldBe` []
+        filterDiagnosticNumbers [[1, 0], [1, 1], [0, 1]] `shouldBe` [1, 1]
 
 dayThreeSampleData :: [String]
 dayThreeSampleData =

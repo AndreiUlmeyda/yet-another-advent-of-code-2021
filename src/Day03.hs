@@ -26,7 +26,7 @@ addElementwise :: [Int] -> [Int] -> [Int]
 addElementwise = zipWith (+)
 
 biggerThanHalfTheInputLength :: ([Int], Int) -> [Bool]
-biggerThanHalfTheInputLength (number, originalInputLength) = map ((>= halfTheInputLength) . fromIntegral) number
+biggerThanHalfTheInputLength (number, originalInputLength) = map ((> halfTheInputLength) . fromIntegral) number
   where
     halfTheInputLength = fromIntegral originalInputLength / 2
 
@@ -52,7 +52,9 @@ filterDiagnosticNumbers numbers = filterDiagnosticNumbers' 0 (mostCommonDigitsOf
 filterDiagnosticNumbers' :: Int -> [Int] -> [[Int]] -> [Int]
 filterDiagnosticNumbers' index mostCommonDigits numbers
   | [singleNumber] <- numbers = singleNumber
-  | otherwise = filterDiagnosticNumbers' (index + 1) mostCommonDigits $ filter (const True) []
+  | otherwise = filterDiagnosticNumbers' (index + 1) mostCommonDigits $ filter numberMatchesMostCommonOne numbers
+  where
+    numberMatchesMostCommonOne number = number !! index == mostCommonDigits !! index
 
 -- filter numbers by digit at index
 -- -> numbers, digit, index
