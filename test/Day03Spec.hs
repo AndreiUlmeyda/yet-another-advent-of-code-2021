@@ -1,6 +1,6 @@
 module Day03Spec (spec) where
 
-import Day03 (addElementwise, solutionDay3Part1)
+import Day03 (addElementwise, filterDiagnosticNumbers, solutionDay3Part1, solutionDay3Part2)
 import Test.Hspec (Spec, context, describe, it, shouldBe)
 
 spec :: Spec
@@ -12,6 +12,9 @@ spec = do
     context "part one with different sample data" $
       it "should be 3879216" $ do
         solutionDay3Part1 dayThreeSampleData2 `shouldBe` 3879216
+  -- context "herp" $
+  --   it "derp" $ do
+  --     solutionDay3Part2 dayThreeSampleData `shouldBe` []
 
   describe "adding diagnostic numbers" $ do
     context "when one number is zero" $
@@ -24,6 +27,11 @@ spec = do
         do
           addElementwise [1, 2, 999] [-100, 2, 1]
           `shouldBe` [-99, 4, 1000]
+
+  describe "filtering diagnostic numbers" $ do
+    context "" $
+      it "should do..." $ do
+        filterDiagnosticNumbers [[1, 0], [1, 1], [0, 1]] `shouldBe` []
 
 dayThreeSampleData :: [String]
 dayThreeSampleData =

@@ -9,11 +9,11 @@ module Main where
 --     solutionDay2Part2,
 --   )
 import Day03
-  ( solutionDay3Part1,
-  -- solutionDay3Part2,
+  ( --solutionDay3Part1,
+    solutionDay3Part2,
   )
 
 main :: IO ()
-main = interact (show . solutionDay3Part1 . lines)
+main = interact (show . solutionDay3Part2 . lines)
 
 -- TODO Substitute Text for String

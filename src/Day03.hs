@@ -2,28 +2,32 @@ module Day03
   ( solutionDay3Part1,
     solutionDay3Part2,
     addElementwise,
+    filterDiagnosticNumbers,
   )
 where
 
 import Data.Char (digitToInt)
+import Data.List (transpose)
 import Data.Tuple.Extra (both)
 
 solutionDay3Part1 :: [[Char]] -> Int
-solutionDay3Part1 input = (uncurry (*) . both toNumber . pairWithNegation . biggerThanHalfTheInputLength input . sumUpElementwise . toDiagnosticNumbers) input
+solutionDay3Part1 = uncurry (*) . both toNumber . pairWithNegation . mostCommonDigits . toDiagnosticNumbers
+
+mostCommonDigits = biggerThanHalfTheInputLength . sumUpElementwise
 
 toDiagnosticNumbers :: [[Char]] -> [[Int]]
 toDiagnosticNumbers = map (map digitToInt)
 
-sumUpElementwise :: [[Int]] -> [Int]
-sumUpElementwise = foldr addElementwise (repeat 0)
+sumUpElementwise :: [[Int]] -> ([Int], Int)
+sumUpElementwise a = (foldr addElementwise (repeat 0) a, length a)
 
 addElementwise :: [Int] -> [Int] -> [Int]
 addElementwise = zipWith (+)
 
-biggerThanHalfTheInputLength :: [String] -> [Int] -> [Bool]
-biggerThanHalfTheInputLength inputStrings = map ((>= halfTheInputLength) . fromIntegral)
+biggerThanHalfTheInputLength :: ([Int], Int) -> [Bool]
+biggerThanHalfTheInputLength (number, originalInputLength) = map ((>= halfTheInputLength) . fromIntegral) number
   where
-    halfTheInputLength = fromIntegral (length inputStrings) / 2
+    halfTheInputLength = fromIntegral originalInputLength / 2
 
 pairWithNegation :: [Bool] -> ([Bool], [Bool])
 pairWithNegation input = (input, map not input)
@@ -36,5 +40,19 @@ toNumber = sum . zipWith (*) powersOfTwo . toZerosAndOnes . reverse
 toZerosAndOnes :: [Bool] -> [Int]
 toZerosAndOnes = map (\boolean -> if boolean then 1 else 0)
 
-solutionDay3Part2 :: [String] -> Int
-solutionDay3Part2 = const 0
+solutionDay3Part2 = transpose . toDiagnosticNumbers
+
+filterDiagnosticNumbers :: [[Int]] -> [Int]
+filterDiagnosticNumbers = filterDiagnosticNumbers' 0 mostCommonDigits
+  where
+    mostCommonDigits = []
+
+filterDiagnosticNumbers' _ _ _ = []
+
+-- filter numbers by digit at index
+-- -> numbers, digit, index
+
+-- from one iteration to the next
+--    numbers -> parameter
+--    digit -> computed once, declare in outer scope, pass to abc'
+--    index -> increases by 1 (parameter?)
