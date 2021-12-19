@@ -1,20 +1,43 @@
 module Day03Spec (spec) where
 
-import Day03 (addElementwise, filterDiagnosticNumbers, leastCommonDigitsOf, mostCommonDigitsOf, solutionDay3Part1, solutionDay3Part2, toDiagnosticNumbers)
-import Test.Hspec (Spec, context, describe, it, shouldBe)
+import Day03
+  ( addElementwise,
+    filterDiagnosticNumbers,
+    leastCommonDigitsOf,
+    mostCommonDigitsOf,
+    solutionDay3Part1,
+    solutionDay3Part2,
+    toDiagnosticNumbers,
+  )
+import Test.Hspec
+  ( Spec,
+    context,
+    describe,
+    it,
+    shouldBe,
+  )
 
 spec :: Spec
 spec = do
-  describe "sample data solutions" $ do
-    context "part one" $
+  describe "interpreting diagnostic data" $ do
+    context "with sample data for part 1" $
       it "should be 198" $ do
-        solutionDay3Part1 dayThreeSampleData `shouldBe` 198 -- full data result 3309596
-    context "part one with different sample data" $
+        solutionDay3Part1 dayThreeSampleData `shouldBe` 198
+    context "with different sample data for part 1" $
       it "should be 3879216" $ do
         solutionDay3Part1 dayThreeSampleData2 `shouldBe` 3879216
-  context "herp" $
-    it "derp" $ do
-      solutionDay3Part2 dayThreeSampleData `shouldBe` 230 -- full data result 2981085
+    context "with actual data for part 1" $
+      it "should be 3309596" $ do
+        actualData <- lines <$> readFile "puzzle-inputs/day-03"
+        solutionDay3Part1 actualData `shouldBe` 3309596
+    context "with sample data for part 2" $
+      it "should be 230" $ do
+        solutionDay3Part2 dayThreeSampleData `shouldBe` 230
+    context "with actual data for part 2" $
+      it "should be 2981085" $ do
+        actualData <- lines <$> readFile "puzzle-inputs/day-03"
+        solutionDay3Part2 actualData `shouldBe` 2981085
+  --
   describe "adding diagnostic numbers" $ do
     context "when one number is zero" $
       it "should be equal to the other one" $

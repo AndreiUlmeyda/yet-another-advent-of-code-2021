@@ -9,17 +9,32 @@ import Day02
     sumDistancesConsideringAim,
     toSubMovementPlus,
   )
-import Test.Hspec (Spec, context, describe, it, shouldBe)
+import Test.Hspec
+  ( Spec,
+    context,
+    describe,
+    it,
+    shouldBe,
+  )
 
 spec :: Spec
 spec = do
-  describe "sample data solutions" $ do
-    context "part one" $
+  describe "computing a final position from steering commands" $ do
+    context "with sample data for part 1" $
       it "should be 150" $ do
-        solutionDay2Part1 dayTwoSampleData `shouldBe` 150 -- full data result 1727835
-    context "part two" $
+        solutionDay2Part1 dayTwoSampleData `shouldBe` 150
+    context "with actual data for part 1" $
+      it "should be 1727835" $ do
+        actualData <- lines <$> readFile "puzzle-inputs/day-02"
+        solutionDay2Part1 actualData `shouldBe` 1727835
+    context "with sample data for part 2" $
       it "should be 900" $ do
-        solutionDay2Part2 dayTwoSampleData `shouldBe` 900 -- full data result 1544000595
+        solutionDay2Part2 dayTwoSampleData `shouldBe` 900
+    context "with actual data for part 2" $
+      it "should be 1544000595" $ do
+        actualData <- lines <$> readFile "puzzle-inputs/day-02"
+        solutionDay2Part2 actualData `shouldBe` 1544000595
+
   describe "parsing sub movements" $ do
     context "given a forward direction and magnitude 5" $
       it "should parse them" $ do
