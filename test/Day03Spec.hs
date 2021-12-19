@@ -1,6 +1,6 @@
 module Day03Spec (spec) where
 
-import Day03 (addElementwise, filterDiagnosticNumbers, solutionDay3Part1, solutionDay3Part2, toDiagnosticNumbers)
+import Day03 (addElementwise, filterDiagnosticNumbers, leastCommonDigitsOf, mostCommonDigitsOf, solutionDay3Part1, solutionDay3Part2, toDiagnosticNumbers)
 import Test.Hspec (Spec, context, describe, it, shouldBe)
 
 spec :: Spec
@@ -12,10 +12,9 @@ spec = do
     context "part one with different sample data" $
       it "should be 3879216" $ do
         solutionDay3Part1 dayThreeSampleData2 `shouldBe` 3879216
-  -- context "herp" $
-  --   it "derp" $ do
-  --     solutionDay3Part2 dayThreeSampleData `shouldBe` []
-
+  context "herp" $
+    it "derp" $ do
+      solutionDay3Part2 dayThreeSampleData `shouldBe` 230 -- full data result 2981085
   describe "adding diagnostic numbers" $ do
     context "when one number is zero" $
       it "should be equal to the other one" $
@@ -31,10 +30,13 @@ spec = do
   describe "filtering diagnostic numbers" $ do
     context "given 3 numbers" $
       it "should select the second one" $ do
-        filterDiagnosticNumbers [[1, 0], [1, 1], [0, 1]] `shouldBe` [1, 1]
+        filterDiagnosticNumbers mostCommonDigitsOf [[1, 0], [1, 1], [0, 1]] `shouldBe` [1, 1]
     context "given sample data" $
       it "should be [1, 0, 1, 1, 1]" $ do
-        filterDiagnosticNumbers (toDiagnosticNumbers dayThreeSampleData) `shouldBe` [1, 0, 1, 1, 1]
+        filterDiagnosticNumbers mostCommonDigitsOf (toDiagnosticNumbers dayThreeSampleData) `shouldBe` [1, 0, 1, 1, 1]
+    context "given sample data" $
+      it "should be [0, 1, 0, 1, 0]" $ do
+        filterDiagnosticNumbers leastCommonDigitsOf (toDiagnosticNumbers dayThreeSampleData) `shouldBe` [0, 1, 0, 1, 0]
 
 dayThreeSampleData :: [String]
 dayThreeSampleData =
@@ -53,7 +55,7 @@ dayThreeSampleData =
   ]
 
 --   10110
--- ==>> most common digits are computed each round
+-- ==>> most common digits are (perhaps) computed each round
 
 dayThreeSampleData2 :: [String]
 dayThreeSampleData2 =

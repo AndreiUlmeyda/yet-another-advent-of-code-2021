@@ -4,6 +4,8 @@ module Day03
     addElementwise,
     filterDiagnosticNumbers,
     toDiagnosticNumbers,
+    mostCommonDigitsOf,
+    leastCommonDigitsOf,
   )
 where
 
@@ -16,6 +18,9 @@ solutionDay3Part1 = uncurry (*) . both toNumber . pairWithNegation . mostCommonD
 
 mostCommonDigitsOf :: [[Int]] -> [Int]
 mostCommonDigitsOf = toZerosAndOnes . biggerThanHalfTheInputLength . elementwiseSumAndLenght
+
+leastCommonDigitsOf :: [[Int]] -> [Int]
+leastCommonDigitsOf = map flipZerosAndOnes . mostCommonDigitsOf
 
 toDiagnosticNumbers :: [[Char]] -> [[Int]]
 toDiagnosticNumbers = map (map digitToInt)
@@ -45,17 +50,27 @@ toNumber = sum . zipWith (*) powersOfTwo . reverse
 toZerosAndOnes :: [Bool] -> [Int]
 toZerosAndOnes = map (\boolean -> if boolean then 1 else 0)
 
-solutionDay3Part2 = transpose . toDiagnosticNumbers
+solutionDay3Part2 :: [[Char]] -> Int
+solutionDay3Part2 = uncurry (*) . both toNumber . pairTheTwoRatings . toDiagnosticNumbers
 
-filterDiagnosticNumbers :: [[Int]] -> [Int]
+pairTheTwoRatings :: [[Int]] -> ([Int], [Int])
+pairTheTwoRatings numbers = (oxygenGeneratorRating numbers, co2ScrubberRating numbers)
+
+oxygenGeneratorRating :: [[Int]] -> [Int]
+oxygenGeneratorRating = filterDiagnosticNumbers mostCommonDigitsOf
+
+co2ScrubberRating :: [[Int]] -> [Int]
+co2ScrubberRating = filterDiagnosticNumbers leastCommonDigitsOf
+
+filterDiagnosticNumbers :: ([[Int]] -> [Int]) -> [[Int]] -> [Int]
 filterDiagnosticNumbers = filterDiagnosticNumbers' 0
 
-filterDiagnosticNumbers' :: Int -> [[Int]] -> [Int]
-filterDiagnosticNumbers' index numbers
+filterDiagnosticNumbers' :: Eq a => Int -> ([[a]] -> [a]) -> [[a]] -> [a]
+filterDiagnosticNumbers' index criterion numbers
   | [singleNumber] <- numbers = singleNumber
-  | otherwise = filterDiagnosticNumbers' (index + 1) $ filter numberMatchesMostCommonOne numbers
+  | otherwise = filterDiagnosticNumbers' (index + 1) criterion $ filter digitMatchesCriterion numbers
   where
-    numberMatchesMostCommonOne number = number !! index == mostCommonDigitsOf numbers !! index
+    digitMatchesCriterion number = number !! index == criterion numbers !! index
 
 -- filter numbers by digit at index
 -- -> numbers, digit, index
