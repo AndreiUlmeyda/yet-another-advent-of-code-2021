@@ -4,8 +4,18 @@ module Day04
   )
 where
 
-solutionDay4Part1 :: [String] -> Int
-solutionDay4Part1 = const 3
+import Data.Tuple.Extra (both)
+
+solutionDay4Part1 = prepareRowsAndColumns . both removeEmptyLines . breakAtEmptyLine
+
+prepareRowsAndColumns :: ([String], [String]) -> ([String], [[String]])
+prepareRowsAndColumns = fmap (map words)
+
+breakAtEmptyLine :: [[Char]] -> ([[Char]], [[Char]])
+breakAtEmptyLine = break (== "")
+
+removeEmptyLines :: [[Char]] -> [[Char]]
+removeEmptyLines = filter (/= "")
 
 solutionDay4Part2 :: [String] -> Int
-solutionDay4Part2 = const 4
+solutionDay4Part2 = const 0

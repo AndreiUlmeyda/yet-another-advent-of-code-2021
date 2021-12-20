@@ -18,4 +18,9 @@ spec = do
     context "with sample data for part 1" $
       it "should be 4512" $ do
         sampleData <- lines <$> readFile "puzzle-inputs/day-04-sample"
-        solutionDay4Part1 sampleData `shouldBe` 4512
+        solutionDay4Part1 sampleData `shouldBe` ([], [])
+
+-- context "with actual data for part 1" $
+--   it "should be ..." $ do
+--     actualData <- lines <$> readFile "puzzle-inputs/day-04"
+--     solutionDay4Part1 actualData `shouldBe` 0
