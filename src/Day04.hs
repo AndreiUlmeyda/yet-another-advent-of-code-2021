@@ -5,6 +5,9 @@ module Day04
 where
 
 import Data.List.Split
+  ( chunksOf,
+    splitOn,
+  )
 import Data.Tuple.Extra (both)
 
 type DrawnNumbers = [String]
@@ -13,21 +16,32 @@ type Boards = [[String]]
 
 type PuzzleInput = [String]
 
-type BoardRow = String
+type BoardsInput = [String]
 
--- solutionDay4Part1 = prepareDrawnNumbers . prepareRowsAndColumns . fmap removeEmptyRows . breakAtEmptyLine
-solutionDay4Part1 = prepareDrawnNumbers . prepareRowsAndColumns . fmap removeEmptyRows . breakAtEmptyLine
+type BoardRow = [String]
 
-prepareRowsAndColumns :: (DrawnNumbers, [String]) -> (DrawnNumbers, Boards)
-prepareRowsAndColumns = fmap (map words) -- transform to 'prepareBoards'
+type Board = [BoardRow]
 
-prepareDrawnNumbers :: (DrawnNumbers, b) -> (DrawnNumbers, b)
+data Marking = Marked | UnMarked deriving (Show, Eq)
+
+solutionDay4Part1 = prepareDrawnNumbers . prepareBoards . both removeEmptyRows . breakAtEmptyLine
+
+playBingo :: (DrawnNumbers, [[[(String, Marking)]]]) -> (Int, Board)
+playBingo = const (0, [])
+
+boardScore :: (Int, Board) -> Int
+boardScore = const 0
+
+prepareBoards :: (DrawnNumbers, BoardsInput) -> (DrawnNumbers, [[[(String, Marking)]]])
+prepareBoards = fmap (chunksOf 5 . map (map (,UnMarked) . words))
+
+prepareDrawnNumbers :: (DrawnNumbers, [[[(String, Marking)]]]) -> (DrawnNumbers, [[[(String, Marking)]]])
 prepareDrawnNumbers (numbers, boards) = (concatMap (splitOn ",") numbers, boards)
 
-breakAtEmptyLine :: PuzzleInput -> (DrawnNumbers, [BoardRow])
+breakAtEmptyLine :: PuzzleInput -> (DrawnNumbers, BoardsInput)
 breakAtEmptyLine = break (== "")
 
-removeEmptyRows :: [BoardRow] -> [BoardRow]
+removeEmptyRows :: PuzzleInput -> PuzzleInput
 removeEmptyRows = filter (/= "")
 
 solutionDay4Part2 :: [String] -> Int
