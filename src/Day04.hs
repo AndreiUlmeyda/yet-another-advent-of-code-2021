@@ -4,18 +4,31 @@ module Day04
   )
 where
 
+import Data.List.Split
 import Data.Tuple.Extra (both)
 
-solutionDay4Part1 = prepareRowsAndColumns . both removeEmptyLines . breakAtEmptyLine
+type DrawnNumbers = [String]
 
-prepareRowsAndColumns :: ([String], [String]) -> ([String], [[String]])
-prepareRowsAndColumns = fmap (map words)
+type Boards = [[String]]
 
-breakAtEmptyLine :: [[Char]] -> ([[Char]], [[Char]])
+type PuzzleInput = [String]
+
+type BoardRow = String
+
+-- solutionDay4Part1 = prepareDrawnNumbers . prepareRowsAndColumns . fmap removeEmptyRows . breakAtEmptyLine
+solutionDay4Part1 = prepareDrawnNumbers . prepareRowsAndColumns . fmap removeEmptyRows . breakAtEmptyLine
+
+prepareRowsAndColumns :: (DrawnNumbers, [String]) -> (DrawnNumbers, Boards)
+prepareRowsAndColumns = fmap (map words) -- transform to 'prepareBoards'
+
+prepareDrawnNumbers :: (DrawnNumbers, b) -> (DrawnNumbers, b)
+prepareDrawnNumbers (numbers, boards) = (concatMap (splitOn ",") numbers, boards)
+
+breakAtEmptyLine :: PuzzleInput -> (DrawnNumbers, [BoardRow])
 breakAtEmptyLine = break (== "")
 
-removeEmptyLines :: [[Char]] -> [[Char]]
-removeEmptyLines = filter (/= "")
+removeEmptyRows :: [BoardRow] -> [BoardRow]
+removeEmptyRows = filter (/= "")
 
 solutionDay4Part2 :: [String] -> Int
 solutionDay4Part2 = const 0
