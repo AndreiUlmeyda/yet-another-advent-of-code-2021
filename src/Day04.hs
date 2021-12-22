@@ -13,33 +13,31 @@ import Data.List.Split
   )
 import Data.Tuple.Extra (both)
 
-type DrawnNumbers = [String]
+type DrawnNumbersInput = [String]
 
-type Boards = [[String]]
+type DrawnNumbers = [Int]
+
+type Boards = [[Int]]
 
 type PuzzleInput = [String]
 
 type BoardsInput = [String]
 
-type BoardRow = [String]
-
-type Board = [[(String, Marking)]]
+type Board = [[(Int, Marking)]]
 
 data Marking = Marked | UnMarked deriving (Show, Eq)
 
 solutionDay4Part1 :: PuzzleInput -> Int
-solutionDay4Part1 = uncurry (*) . sumUnMarked . playBingo . prepareDrawnNumbers . prepareBoards . both removeEmptyRows . breakAtEmptyLine
+solutionDay4Part1 = uncurry (*) . sumUnMarked . playBingo . preparePuzzleInput
 
--- TODO parse numbers early
+preparePuzzleInput :: PuzzleInput -> (DrawnNumbers, [Board])
+preparePuzzleInput = prepareDrawnNumbers . prepareBoards . both removeEmptyRows . breakAtEmptyLine
 
 sumUnMarked :: Maybe (Int, Board) -> (Int, Int)
 sumUnMarked Nothing = (0, 0)
-sumUnMarked (Just (lastDraw, winningBoard)) = (lastDraw, (sum . map derp . filter unMarked . concat) winningBoard)
+sumUnMarked (Just (lastDraw, winningBoard)) = (lastDraw, (sum . map fst . filter unMarked . concat) winningBoard)
 
-derp :: (String, Marking) -> Int
-derp (numberString, marking) = read numberString
-
-unMarked :: (String, Marking) -> Bool
+unMarked :: (Int, Marking) -> Bool
 unMarked (_, marking) = marking == UnMarked
 
 playBingo :: (DrawnNumbers, [Board]) -> Maybe (Int, Board)
@@ -51,15 +49,15 @@ playBingo numbersAndBoards
     numbers = fst numbersAndBoards
     boards = snd numbersAndBoards
 
-playBingo' :: [String] -> [Board] -> (Int, Board)
+playBingo' :: DrawnNumbers -> [Board] -> (Int, Board)
 playBingo' numberStrings boards
   | any complete boardsAfterMarking = (number, head (filter complete boardsAfterMarking))
   | otherwise = playBingo' (tail numberStrings) boardsAfterMarking
   where
-    number = (read . head) numberStrings
+    number = head numberStrings
     boardsAfterMarking = map (map (map (mark (head numberStrings)))) boards
 
-mark :: String -> (String, Marking) -> (String, Marking)
+mark :: Int -> (Int, Marking) -> (Int, Marking)
 mark drawnNumber bingoCell
   | drawnNumber == fst bingoCell = (fst bingoCell, Marked)
   | otherwise = bingoCell
@@ -77,13 +75,16 @@ isMarked (_, UnMarked) = False
 boardScore :: (Int, Board) -> Int
 boardScore = const 0
 
-prepareBoards :: (DrawnNumbers, BoardsInput) -> (DrawnNumbers, [Board])
-prepareBoards = fmap (chunksOf 5 . map (map (,UnMarked) . words))
+prepareBoards :: (DrawnNumbersInput, BoardsInput) -> (DrawnNumbersInput, [Board])
+prepareBoards = fmap (chunksOf 5 . map (map ((,UnMarked) . strToInt) . words))
 
-prepareDrawnNumbers :: (DrawnNumbers, [Board]) -> (DrawnNumbers, [Board])
-prepareDrawnNumbers (numbers, boards) = (concatMap (splitOn ",") numbers, boards)
+strToInt :: String -> Int
+strToInt = read
 
-breakAtEmptyLine :: PuzzleInput -> (DrawnNumbers, BoardsInput)
+prepareDrawnNumbers :: (DrawnNumbersInput, [Board]) -> (DrawnNumbers, [Board])
+prepareDrawnNumbers (numbers, boards) = (concatMap (map read . splitOn ",") numbers, boards)
+
+breakAtEmptyLine :: PuzzleInput -> (DrawnNumbersInput, BoardsInput)
 breakAtEmptyLine = break (== "")
 
 removeEmptyRows :: PuzzleInput -> PuzzleInput

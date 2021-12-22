@@ -22,12 +22,12 @@ spec = do
         playBingo ([], []) `shouldBe` Nothing
     context "with no numbers but valid boards" $
       it "should result in Nothing" $ do
-        playBingo ([], [[[("", UnMarked)], [("", UnMarked)]]]) `shouldBe` Nothing
+        playBingo ([], [[[(0, UnMarked)], [(0, UnMarked)]]]) `shouldBe` Nothing
     context "with a number which completes the first board" $
       it "should return the current number and the board" $ do
-        let almostCompleteBoard = [[("1", UnMarked)], [("2", Marked)]]
-            completeBoard = [[("1", Marked)], [("2", Marked)]]
-         in playBingo (["1"], [almostCompleteBoard]) `shouldBe` Just (1, completeBoard)
+        let almostCompleteBoard = [[(1, UnMarked)], [(2, Marked)]]
+            completeBoard = [[(1, Marked)], [(2, Marked)]]
+         in playBingo ([1], [almostCompleteBoard]) `shouldBe` Just (1, completeBoard)
     context "with sample data for part 1" $
       it "should be 4512" $ do
         sampleData <- lines <$> readFile "puzzle-inputs/day-04-sample"
