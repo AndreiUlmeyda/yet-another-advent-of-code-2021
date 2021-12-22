@@ -4,6 +4,7 @@ module Day04
     playBingo,
     Marking (Marked, UnMarked),
     toWin,
+    PuzzleInput,
   )
 where
 
@@ -95,7 +96,7 @@ solutionDay4Part2 = computeScore . playBingo toLose . preparePuzzleInput
 
 toLose :: BingoStrategy
 toLose numberStrings boards
-  | length boards == 1 && complete (head boardsAfterMarking) = (number, head boardsAfterMarking)
+  | length boards == 1 && complete (head boardsAfterMarking) = (number, head boardsAfterMarking) -- will loop on most inputs, maybe fix that later
   | otherwise = toLose (tail numberStrings) (filter (not . complete) boardsAfterMarking)
   where
     number = head numberStrings
