@@ -95,4 +95,8 @@ solutionDay4Part2 = computeScore . playBingo toLose . preparePuzzleInput
 
 toLose :: BingoStrategy
 toLose numberStrings boards
-  | True = (0, [])
+  | length boards == 1 && complete (head boardsAfterMarking) = (number, head boardsAfterMarking)
+  | otherwise = toLose (tail numberStrings) (filter (not . complete) boardsAfterMarking)
+  where
+    number = head numberStrings
+    boardsAfterMarking = map (map (map (mark (head numberStrings)))) boards

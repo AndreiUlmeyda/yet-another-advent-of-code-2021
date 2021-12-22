@@ -37,3 +37,11 @@ spec = do
       it "should be 50008" $ do
         actualData <- lines <$> readFile "puzzle-inputs/day-04"
         solutionDay4Part1 actualData `shouldBe` 50008
+    context "with sample data for part 2" $
+      it "should be 1924" $ do
+        sampleData <- lines <$> readFile "puzzle-inputs/day-04-sample"
+        solutionDay4Part2 sampleData `shouldBe` 1924
+    context "with actual data for part 2" $
+      it "should be 17408" $ do
+        actualData <- lines <$> readFile "puzzle-inputs/day-04"
+        solutionDay4Part2 actualData `shouldBe` 17408
