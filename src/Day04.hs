@@ -35,10 +35,10 @@ preparePuzzleInput = prepareDrawnNumbers . prepareBoards . both removeEmptyRows 
 
 sumUnMarked :: Maybe (Int, Board) -> (Int, Int)
 sumUnMarked Nothing = (0, 0)
-sumUnMarked (Just (lastDraw, winningBoard)) = (lastDraw, (sum . map fst . filter unMarked . concat) winningBoard)
+sumUnMarked (Just (lastDraw, winningBoard)) = (lastDraw, (sum . map fst . filter isUnMarked . concat) winningBoard)
 
-unMarked :: (Int, Marking) -> Bool
-unMarked (_, marking) = marking == UnMarked
+isUnMarked :: (Int, Marking) -> Bool
+isUnMarked (_, marking) = marking == UnMarked
 
 playBingo :: (DrawnNumbers, [Board]) -> Maybe (Int, Board)
 playBingo numbersAndBoards
@@ -72,14 +72,8 @@ isMarked :: (a, Marking) -> Bool
 isMarked (_, Marked) = True
 isMarked (_, UnMarked) = False
 
-boardScore :: (Int, Board) -> Int
-boardScore = const 0
-
 prepareBoards :: (DrawnNumbersInput, BoardsInput) -> (DrawnNumbersInput, [Board])
-prepareBoards = fmap (chunksOf 5 . map (map ((,UnMarked) . strToInt) . words))
-
-strToInt :: String -> Int
-strToInt = read
+prepareBoards = fmap (chunksOf 5 . map (map ((,UnMarked) . read) . words))
 
 prepareDrawnNumbers :: (DrawnNumbersInput, [Board]) -> (DrawnNumbers, [Board])
 prepareDrawnNumbers (numbers, boards) = (concatMap (map read . splitOn ",") numbers, boards)
@@ -90,5 +84,5 @@ breakAtEmptyLine = break (== "")
 removeEmptyRows :: PuzzleInput -> PuzzleInput
 removeEmptyRows = filter (/= "")
 
-solutionDay4Part2 :: [String] -> Int
+solutionDay4Part2 :: PuzzleInput -> Int
 solutionDay4Part2 = const 0
