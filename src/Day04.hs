@@ -3,6 +3,7 @@ module Day04
     solutionDay4Part2,
     playBingo,
     Marking (Marked, UnMarked),
+    toWin,
   )
 where
 
@@ -28,31 +29,31 @@ type Board = [[(Int, Marking)]]
 data Marking = Marked | UnMarked deriving (Show, Eq)
 
 solutionDay4Part1 :: PuzzleInput -> Int
-solutionDay4Part1 = uncurry (*) . sumUnMarked . playBingo . preparePuzzleInput
+solutionDay4Part1 = uncurry (*) . sumUnMarked . playBingo toWin . preparePuzzleInput
 
 preparePuzzleInput :: PuzzleInput -> (DrawnNumbers, [Board])
 preparePuzzleInput = prepareDrawnNumbers . prepareBoards . both removeEmptyRows . breakAtEmptyLine
 
 sumUnMarked :: Maybe (Int, Board) -> (Int, Int)
 sumUnMarked Nothing = (0, 0)
-sumUnMarked (Just (lastDraw, winningBoard)) = (lastDraw, (sum . map fst . filter isUnMarked . concat) winningBoard)
+sumUnMarked (Just drawnNumberAndBoards) = fmap (sum . map fst . filter isUnMarked . concat) drawnNumberAndBoards
 
 isUnMarked :: (Int, Marking) -> Bool
 isUnMarked (_, marking) = marking == UnMarked
 
-playBingo :: (DrawnNumbers, [Board]) -> Maybe (Int, Board)
-playBingo numbersAndBoards
+playBingo :: (DrawnNumbers -> [Board] -> (Int, Board)) -> (DrawnNumbers, [Board]) -> Maybe (Int, Board)
+playBingo strategy numbersAndBoards
   | ([], _) <- numbersAndBoards = Nothing
   | (_, []) <- numbersAndBoards = Nothing
-  | otherwise = Just (playBingo' numbers boards)
+  | otherwise = Just (strategy numbers boards)
   where
     numbers = fst numbersAndBoards
     boards = snd numbersAndBoards
 
-playBingo' :: DrawnNumbers -> [Board] -> (Int, Board)
-playBingo' numberStrings boards
+toWin :: DrawnNumbers -> [Board] -> (Int, Board)
+toWin numberStrings boards
   | any complete boardsAfterMarking = (number, head (filter complete boardsAfterMarking))
-  | otherwise = playBingo' (tail numberStrings) boardsAfterMarking
+  | otherwise = toWin (tail numberStrings) boardsAfterMarking
   where
     number = head numberStrings
     boardsAfterMarking = map (map (map (mark (head numberStrings)))) boards
@@ -66,11 +67,11 @@ complete :: Board -> Bool
 complete board = any rowComplete board || any rowComplete (transpose board)
 
 rowComplete :: [(a, Marking)] -> Bool
-rowComplete = all isMarked
+rowComplete = all (snd . fmap isMarked)
 
-isMarked :: (a, Marking) -> Bool
-isMarked (_, Marked) = True
-isMarked (_, UnMarked) = False
+isMarked :: Marking -> Bool
+isMarked Marked = True
+isMarked UnMarked = False
 
 prepareBoards :: (DrawnNumbersInput, BoardsInput) -> (DrawnNumbersInput, [Board])
 prepareBoards = fmap (chunksOf 5 . map (map ((,UnMarked) . read) . words))
@@ -85,4 +86,8 @@ removeEmptyRows :: PuzzleInput -> PuzzleInput
 removeEmptyRows = filter (/= "")
 
 solutionDay4Part2 :: PuzzleInput -> Int
-solutionDay4Part2 = const 0
+solutionDay4Part2 = uncurry (*) . sumUnMarked . playBingo toLose . preparePuzzleInput
+
+toLose :: DrawnNumbers -> [Board] -> (Int, Board)
+toLose numberStrings boards
+  | True = (0, [])
