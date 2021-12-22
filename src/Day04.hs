@@ -28,8 +28,13 @@ type Board = [[(Int, Marking)]]
 
 data Marking = Marked | UnMarked deriving (Show, Eq)
 
+type BingoStrategy = DrawnNumbers -> [Board] -> (Int, Board)
+
 solutionDay4Part1 :: PuzzleInput -> Int
-solutionDay4Part1 = uncurry (*) . sumUnMarked . playBingo toWin . preparePuzzleInput
+solutionDay4Part1 = computeScore . playBingo toWin . preparePuzzleInput
+
+computeScore :: Maybe (Int, Board) -> Int
+computeScore = uncurry (*) . sumUnMarked
 
 preparePuzzleInput :: PuzzleInput -> (DrawnNumbers, [Board])
 preparePuzzleInput = prepareDrawnNumbers . prepareBoards . both removeEmptyRows . breakAtEmptyLine
@@ -41,7 +46,7 @@ sumUnMarked (Just drawnNumberAndBoards) = fmap (sum . map fst . filter isUnMarke
 isUnMarked :: (Int, Marking) -> Bool
 isUnMarked (_, marking) = marking == UnMarked
 
-playBingo :: (DrawnNumbers -> [Board] -> (Int, Board)) -> (DrawnNumbers, [Board]) -> Maybe (Int, Board)
+playBingo :: BingoStrategy -> (DrawnNumbers, [Board]) -> Maybe (Int, Board)
 playBingo strategy numbersAndBoards
   | ([], _) <- numbersAndBoards = Nothing
   | (_, []) <- numbersAndBoards = Nothing
@@ -50,7 +55,7 @@ playBingo strategy numbersAndBoards
     numbers = fst numbersAndBoards
     boards = snd numbersAndBoards
 
-toWin :: DrawnNumbers -> [Board] -> (Int, Board)
+toWin :: BingoStrategy
 toWin numberStrings boards
   | any complete boardsAfterMarking = (number, head (filter complete boardsAfterMarking))
   | otherwise = toWin (tail numberStrings) boardsAfterMarking
@@ -86,8 +91,8 @@ removeEmptyRows :: PuzzleInput -> PuzzleInput
 removeEmptyRows = filter (/= "")
 
 solutionDay4Part2 :: PuzzleInput -> Int
-solutionDay4Part2 = uncurry (*) . sumUnMarked . playBingo toLose . preparePuzzleInput
+solutionDay4Part2 = computeScore . playBingo toLose . preparePuzzleInput
 
-toLose :: DrawnNumbers -> [Board] -> (Int, Board)
+toLose :: BingoStrategy
 toLose numberStrings boards
   | True = (0, [])
