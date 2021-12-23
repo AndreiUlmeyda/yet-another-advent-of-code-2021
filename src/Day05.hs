@@ -1,9 +1,13 @@
 module Day05
   ( solutionDay5Part1,
     solutionDay5Part2,
+    listOfCoordinatesFrom,
+    Line (MkLine),
+    range,
   )
 where
 
+import Data.List (group, sortBy)
 import Data.List.Split (splitOn)
 import Day04 (PuzzleInput)
 
@@ -17,19 +21,32 @@ data Line = MkLine
 
 type Coordinate = (Int, Int)
 
---solutionDay5Part1 :: PuzzleInput -> [(String, String)]
-solutionDay5Part1 = concatMap listOfCoordinatesFrom . prepareLines
+solutionDay5Part1 :: PuzzleInput -> Int
+solutionDay5Part1 = countCoordinatesWithLessThanTwoLines . filter notDiagonal . prepareLines
+
+solutionDay5Part2 :: PuzzleInput -> Int
+solutionDay5Part2 = countCoordinatesWithLessThanTwoLines . prepareLines
+
+countCoordinatesWithLessThanTwoLines :: [Line] -> Int
+countCoordinatesWithLessThanTwoLines = length . filter ((>= 2) . length) . group . sortCoordinates . concatMap listOfCoordinatesFrom
+
+sortCoordinates :: [Coordinate] -> [Coordinate]
+sortCoordinates = sortBy (\(x1, y1) (x2, y2) -> if x1 == x2 then compare y1 y2 else compare x1 x2)
 
 listOfCoordinatesFrom :: Line -> [Coordinate]
 listOfCoordinatesFrom (MkLine sx sy ex ey)
-  | sx == ex = zip (fromSmallerToBigger sy ey) (repeat sx)
-  | sy == ey = zip (fromSmallerToBigger sx ex) (repeat sy)
-  | otherwise = error "tried to generate list of coordinates from diagonal line"
-  where
-    fromSmallerToBigger a b = [(min a b) .. (max a b)]
+  | sx == ex = zip (repeat sx) (range sy ey)
+  | sy == ey = zip (range sx ex) (repeat sy)
+  | otherwise = zip (range sx ex) (range sy ey)
+
+-- adapted from https://stackoverflow.com/questions/7958181/ranges-in-haskell-ghci
+range :: (Ord a, Num a) => a -> a -> [a]
+range start end
+  | start <= end = takeWhile (<= end) (iterate (+ 1) start)
+  | otherwise = reverse (range end start)
 
 prepareLines :: PuzzleInput -> [Line]
-prepareLines = filter notDiagonal . map (toLine . map read . concatMap (splitOn ",") . splitOn " -> ")
+prepareLines = map (toLine . map read . concatMap (splitOn ",") . splitOn " -> ")
 
 notDiagonal :: Line -> Bool
 notDiagonal (MkLine sx sy ex ey) = sx == ex || sy == ey
@@ -39,18 +56,15 @@ toLine coordinates
   | [sx, sy, ex, ey] <- coordinates = MkLine sx sy ex ey
   | otherwise = error "couldn't parse line coordinates with more or less than 4 elements"
 
-solutionDay5Part2 :: PuzzleInput -> Int
-solutionDay5Part2 = const 0
-
 -- (0,0) -> non-diagonal if x = const or y = const
 
 -- 0,9 -> 5,9
 -- 8,0 -> 0,8 drop
 -- 9,4 -> 3,4
--- 2,2 -> 2,1
+-- 2,2 -> 2,1 ??
 -- 7,0 -> 7,4
--- 6,4 -> 2,0
+-- 6,4 -> 2,0 drop
 -- 0,9 -> 2,9
 -- 3,4 -> 1,4
--- 0,0 -> 8,8
--- 5,5 -> 8,2
+-- 0,0 -> 8,8 drop
+-- 5,5 -> 8,2 drop
