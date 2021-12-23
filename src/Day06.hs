@@ -70,3 +70,5 @@ derp ageAndCount population
   | fst ageAndCount == 6 = population {age6 = snd ageAndCount}
   | fst ageAndCount == 7 = population {age7 = snd ageAndCount}
   | otherwise = population {age8 = fst ageAndCount}
+
+-- TODO clean up, drop the intermediate FishPopulation type, play around with lens
