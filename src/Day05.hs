@@ -31,7 +31,12 @@ countCoordinatesWithLessThanTwoLines :: [Line] -> Int
 countCoordinatesWithLessThanTwoLines = length . filter ((>= 2) . length) . group . sortCoordinates . concatMap listOfCoordinatesFrom
 
 sortCoordinates :: [Coordinate] -> [Coordinate]
-sortCoordinates = sortBy (\(x1, y1) (x2, y2) -> if x1 == x2 then compare y1 y2 else compare x1 x2)
+sortCoordinates = sortBy compareCoordinates
+
+compareCoordinates :: Coordinate -> Coordinate -> Ordering
+compareCoordinates coord1 coord2
+  | fst coord1 == fst coord2 = compare (snd coord1) (snd coord2)
+  | otherwise = compare (fst coord1) (fst coord2)
 
 listOfCoordinatesFrom :: Line -> [Coordinate]
 listOfCoordinatesFrom (MkLine sx sy ex ey)
