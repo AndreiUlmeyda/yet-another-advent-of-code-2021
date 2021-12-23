@@ -23,6 +23,7 @@ dependencies:
 - base >= 4.7 && < 5
 - extra
 - split
+- lens
 
 library:
   source-dirs: src
