@@ -2,10 +2,7 @@ module Day01 (solutionDay1Part1, solutionDay1Part2) where
 
 -- ######### Part One #########
 solutionDay1Part1 :: [String] -> Int
-solutionDay1Part1 = countIncreases . map toInt
-
-toInt :: String -> Int
-toInt = read
+solutionDay1Part1 = countIncreases . map read
 
 countIncreases :: [Int] -> Int
 countIncreases = length . filter (> 0) . listOfDifferences
@@ -17,7 +14,7 @@ listOfDifferences input
 
 -- ######### Part Two #########
 solutionDay1Part2 :: [String] -> Int
-solutionDay1Part2 = countIncreases . slidingWindowSumLengthThree . map toInt
+solutionDay1Part2 = countIncreases . slidingWindowSumLengthThree . map read
 
 slidingWindowSumLengthThree :: [Int] -> [Int]
 slidingWindowSumLengthThree input
