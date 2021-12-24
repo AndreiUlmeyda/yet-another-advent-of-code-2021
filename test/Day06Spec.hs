@@ -1,9 +1,7 @@
 module Day06Spec (spec) where
 
-import Data.List (sort)
 import Day06
-  ( FishPopulation (MkFishPopulation),
-    solutionDay6Part1,
+  ( solutionDay6Part1,
     solutionDay6Part2,
   )
 import Test.Hspec
@@ -16,7 +14,7 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
-  describe "" $ do
+  describe "modeling lanternfish populations" $ do
     context "with sample data for part 1" $
       it "should result in 5934" $ do
         sampleData <- lines <$> readFile "puzzle-inputs/day-06-sample"

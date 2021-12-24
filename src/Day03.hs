@@ -13,6 +13,7 @@ import Data.Char (digitToInt)
 import Data.List (transpose)
 import Data.Tuple.Extra (both)
 
+-- ######### Part One #########
 solutionDay3Part1 :: [[Char]] -> Int
 solutionDay3Part1 = uncurry (*) . both toNumber . pairWithNegation . mostCommonDigitsOf . toDiagnosticNumbers
 
@@ -50,6 +51,7 @@ toNumber = sum . zipWith (*) powersOfTwo . reverse
 toZerosAndOnes :: [Bool] -> [Int]
 toZerosAndOnes = map (\boolean -> if boolean then 1 else 0)
 
+-- ######### Part Two #########
 solutionDay3Part2 :: [[Char]] -> Int
 solutionDay3Part2 = uncurry (*) . both toNumber . pairTheTwoRatings . toDiagnosticNumbers
 

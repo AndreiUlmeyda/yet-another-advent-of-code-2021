@@ -31,6 +31,7 @@ data Marking = Marked | UnMarked deriving (Show, Eq)
 
 type BingoStrategy = DrawnNumbers -> [Board] -> (Int, Board)
 
+-- ######### Part One #########
 solutionDay4Part1 :: PuzzleInput -> Int
 solutionDay4Part1 = computeScore . playBingo toWin . preparePuzzleInput
 
@@ -91,6 +92,7 @@ breakAtEmptyLine = break (== "")
 removeEmptyRows :: PuzzleInput -> PuzzleInput
 removeEmptyRows = filter (/= "")
 
+-- ######### Part Two #########
 solutionDay4Part2 :: PuzzleInput -> Int
 solutionDay4Part2 = computeScore . playBingo toLose . preparePuzzleInput
 

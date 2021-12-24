@@ -21,9 +21,11 @@ data Line = MkLine
 
 type Coordinate = (Int, Int)
 
+-- ######### Part One #########
 solutionDay5Part1 :: PuzzleInput -> Int
 solutionDay5Part1 = countCoordinatesWithLessThanTwoLines . filter notDiagonal . prepareLines
 
+-- ######### Part Two #########
 solutionDay5Part2 :: PuzzleInput -> Int
 solutionDay5Part2 = countCoordinatesWithLessThanTwoLines . prepareLines
 

@@ -10,14 +10,14 @@ module Day02
 where
 
 -- ######### Part One #########
+solutionDay2Part1 :: [String] -> Int
+solutionDay2Part1 = multiplyDirections . sumDistances . map (toSubMovement . words)
+
 data SubMovement = MkSubMovement
   { xDirection :: Int,
     yDirection :: Int
   }
   deriving (Show, Eq)
-
-solutionDay2Part1 :: [String] -> Int
-solutionDay2Part1 = multiplyDirections . sumDistances . map (toSubMovement . words)
 
 multiplyDirections :: SubMovement -> Int
 multiplyDirections (MkSubMovement x y) = x * y

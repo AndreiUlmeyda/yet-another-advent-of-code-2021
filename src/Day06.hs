@@ -1,11 +1,10 @@
 module Day06
   ( solutionDay6Part1,
     solutionDay6Part2,
-    FishPopulation (MkFishPopulation),
   )
 where
 
-import Control.Lens (element, set, (.~))
+import Control.Lens (element, set)
 import Data.List (group, sort)
 import Data.List.Split (splitOn)
 import Day04 (PuzzleInput)
@@ -23,6 +22,7 @@ data FishPopulation = MkFishPopulation
   }
   deriving (Show, Eq)
 
+-- ######### Part One #########
 solutionDay6Part1 :: PuzzleInput -> Int
 solutionDay6Part1 = populationSizeAfterDays 80
 
@@ -37,6 +37,7 @@ ageAndMultiply age
   | age == 0 = [6, 8]
   | otherwise = [age -1]
 
+-- ######### Part Two #########
 solutionDay6Part2 :: PuzzleInput -> Int
 solutionDay6Part2 = sum . map snd . (!! 256) . iterate ageAndMultiplyImproved . supplyMissingIndices zeroCounts . map toElementAndLength . group . sort . prepareInput
 
