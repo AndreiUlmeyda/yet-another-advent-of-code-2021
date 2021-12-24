@@ -29,6 +29,7 @@ library
       Day05
       Day06
       Day07
+      Day08
   other-modules:
       Paths_advent_of_code
   hs-source-dirs:
@@ -72,6 +73,7 @@ test-suite advent-of-code-test
       Day05Spec
       Day06Spec
       Day07Spec
+      Day08Spec
       Paths_advent_of_code
   hs-source-dirs:
       test
