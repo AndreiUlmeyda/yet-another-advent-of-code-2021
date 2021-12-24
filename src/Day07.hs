@@ -18,28 +18,25 @@ type CostFunction = CrabPosition -> TargetPosition -> AlignmentCost
 
 -- ######### Part One #########
 solutionDay7Part1 :: PuzzleInput -> AlignmentCost
-solutionDay7Part1 = cheapestAlignment alignmentCost . prepareInput
+solutionDay7Part1 = cheapestAlignmentWith alignmentCost . prepareInput
 
 prepareInput :: PuzzleInput -> [CrabPosition]
 prepareInput = map read . splitOn "," . head
 
-cheapestAlignment :: CostFunction -> [CrabPosition] -> AlignmentCost
-cheapestAlignment costFunction crabPositions = minimum $ map (alignPositions costFunction crabPositions) possiblePositions
+cheapestAlignmentWith :: CostFunction -> [CrabPosition] -> AlignmentCost
+cheapestAlignmentWith costFunction crabPositions = minimum $ map (alignAtPosition costFunction crabPositions) possiblePositions
   where
     possiblePositions = [(minimum crabPositions) .. (maximum crabPositions)]
 
-alignPositions :: CostFunction -> [CrabPosition] -> TargetPosition -> AlignmentCost
-alignPositions costFunction crabPositions targetAlignment = sum $ map (costFunction targetAlignment) crabPositions
-
-align :: CrabPosition -> TargetPosition -> AlignmentCost
-align target crabPosition = abs $ target - crabPosition
+alignAtPosition :: CostFunction -> [CrabPosition] -> TargetPosition -> AlignmentCost
+alignAtPosition costFunction crabPositions targetAlignment = sum $ map (costFunction targetAlignment) crabPositions
 
 alignmentCost :: CrabPosition -> TargetPosition -> AlignmentCost
-alignmentCost target crabPosition = abs $ target - crabPosition
+alignmentCost target crabPosition = abs (target - crabPosition)
 
 -- ######### Part Two #########
 solutionDay7Part2 :: PuzzleInput -> AlignmentCost
-solutionDay7Part2 = cheapestAlignment alignmentCostPartTwo . prepareInput
+solutionDay7Part2 = cheapestAlignmentWith increasedAlignmentCost . prepareInput
 
-alignmentCostPartTwo :: CrabPosition -> TargetPosition -> AlignmentCost
-alignmentCostPartTwo target crabPosition = sum $ take (alignmentCost target crabPosition) [1 ..]
+increasedAlignmentCost :: CrabPosition -> TargetPosition -> AlignmentCost
+increasedAlignmentCost target crabPosition = sum $ take (alignmentCost target crabPosition) [1 ..]
