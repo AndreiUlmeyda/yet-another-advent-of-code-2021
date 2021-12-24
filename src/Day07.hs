@@ -1,6 +1,6 @@
 module Day07
   ( solutionDay7Part1,
-  -- solutionDay7Part2,
+    solutionDay7Part2,
   )
 where
 
@@ -14,18 +14,32 @@ type CrabPosition = Int
 
 type TargetPosition = Int
 
-solutionDay7Part1 :: PuzzleInput -> AlignmentCost
-solutionDay7Part1 = cheapestAlignment . map read . splitOn "," . head
+type CostFunction = CrabPosition -> TargetPosition -> AlignmentCost
 
-cheapestAlignment :: [CrabPosition] -> AlignmentCost
-cheapestAlignment crabPositions = minimum $ map (alignPositions crabPositions) possiblePositions
+-- ######### Part One #########
+solutionDay7Part1 :: PuzzleInput -> AlignmentCost
+solutionDay7Part1 = cheapestAlignment alignmentCost . prepareInput
+
+prepareInput :: PuzzleInput -> [CrabPosition]
+prepareInput = map read . splitOn "," . head
+
+cheapestAlignment :: CostFunction -> [CrabPosition] -> AlignmentCost
+cheapestAlignment costFunction crabPositions = minimum $ map (alignPositions costFunction crabPositions) possiblePositions
   where
     possiblePositions = [(minimum crabPositions) .. (maximum crabPositions)]
 
-alignPositions :: [CrabPosition] -> TargetPosition -> AlignmentCost
-alignPositions crabPositions targetAlignment = sum $ map (align targetAlignment) crabPositions
+alignPositions :: CostFunction -> [CrabPosition] -> TargetPosition -> AlignmentCost
+alignPositions costFunction crabPositions targetAlignment = sum $ map (costFunction targetAlignment) crabPositions
 
 align :: CrabPosition -> TargetPosition -> AlignmentCost
 align target crabPosition = abs $ target - crabPosition
 
--- solutionDay7Part2 = const 0
+alignmentCost :: CrabPosition -> TargetPosition -> AlignmentCost
+alignmentCost target crabPosition = abs $ target - crabPosition
+
+-- ######### Part Two #########
+solutionDay7Part2 :: PuzzleInput -> AlignmentCost
+solutionDay7Part2 = cheapestAlignment alignmentCostPartTwo . prepareInput
+
+alignmentCostPartTwo :: CrabPosition -> TargetPosition -> AlignmentCost
+alignmentCostPartTwo target crabPosition = sum $ take (alignmentCost target crabPosition) [1 ..]
