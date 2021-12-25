@@ -2,7 +2,7 @@ module Day08Spec (spec) where
 
 import Day08
   ( solutionDay8Part1,
-    solutionDay8Part2,
+  -- solutionDay8Part2,
   )
 import Test.Hspec
   ( Spec,
