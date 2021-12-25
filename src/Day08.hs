@@ -11,7 +11,7 @@ type SevenSegmentDigit = String
 
 -- ######### Part One #########
 solutionDay8Part1 :: PuzzleInput -> Int
-solutionDay8Part1 = countUniqueLengths . prepareInput
+solutionDay8Part1 = sum . map countUniqueLengths . prepareInput
 
 countUniqueLengths :: [SevenSegmentDigit] -> Int
 countUniqueLengths = length . filter isOfUniqueLength
@@ -19,8 +19,8 @@ countUniqueLengths = length . filter isOfUniqueLength
 isOfUniqueLength :: Foldable t => t a -> Bool
 isOfUniqueLength a = length a `elem` [2, 3, 4, 7]
 
-prepareInput :: PuzzleInput -> [SevenSegmentDigit]
-prepareInput = words . (!! 1) . splitOn " | " . head
+prepareInput :: PuzzleInput -> [[SevenSegmentDigit]]
+prepareInput = map (words . (!! 1) . splitOn " | ")
 
 -- ######### Part Two #########
 -- solutionDay8Part2 :: PuzzleInput -> Int

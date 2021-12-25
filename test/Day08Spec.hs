@@ -14,16 +14,16 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
-  describe "" $ do
+  describe "interpreting seven segment displays" $ do
     context "with sample data for part 1" $
-      it "should result in xxx" $ do
+      it "should result in 26" $ do
         sampleData <- lines <$> readFile "puzzle-inputs/day-08-sample"
-        solutionDay8Part1 sampleData `shouldBe` 0
+        solutionDay8Part1 sampleData `shouldBe` 26
+    context "with actual data for part 1" $
+      it "should result in xxx" $ do
+        actualData <- lines <$> readFile "puzzle-inputs/day-08"
+        solutionDay8Part1 actualData `shouldBe` 0
 
--- context "with actual data for part 1" $
---   it "should result in 341558" $ do
---     actualData <- lines <$> readFile "puzzle-inputs/day-07"
---     solutionDay7Part1 actualData `shouldBe` 341558
 -- context "with sample data for part 2" $
 --   it "should result in 168" $ do
 --     sampleData <- lines <$> readFile "puzzle-inputs/day-07-sample"
