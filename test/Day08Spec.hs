@@ -27,7 +27,7 @@ spec = do
     context "with sample data for part 2" $
       it "should result in 61229" $ do
         sampleData <- lines <$> readFile "puzzle-inputs/day-08-smaller-sample"
-        solutionDay8Part2 sampleData `shouldBe` []
+        solutionDay8Part2 sampleData `shouldBe` 0
 
 -- context "with actual data for part 2" $
 --   it "should result in 93214037" $ do

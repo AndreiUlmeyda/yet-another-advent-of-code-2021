@@ -4,8 +4,9 @@ module Day08
   )
 where
 
+import Control.Arrow (ArrowZero (zeroArrow))
 import Control.Lens (element, set)
-import Data.List (find, intersect, sort)
+import Data.List (elemIndex, find, findIndex, intersect, sort, (\\))
 import Data.List.Split (splitOn)
 import Data.Maybe (fromJust)
 import Day04 (PuzzleInput)
@@ -28,7 +29,16 @@ prepareInput = map (words . (!! 1) . splitOn " | ")
 
 -- ######### Part Two #########
 -- solutionDay8Part2 :: PuzzleInput -> Int
-solutionDay8Part2 = map pairWithMappings . prepareInput2
+solutionDay8Part2 :: PuzzleInput -> Int
+solutionDay8Part2 = sum . map (toNumber . applyMapping . pairWithMappings) . prepareInput2
+
+toNumber :: [Int] -> Int
+toNumber = sum . zipWith (*) powersOfTen . reverse
+  where
+    powersOfTen = iterate (* 10) 1
+
+applyMapping :: ([SevenSegmentDigit], [String]) -> [Int]
+applyMapping (mapping, output) = map (\string -> fromJust (elemIndex string mapping)) output
 
 pairWithMappings :: [[String]] -> ([SevenSegmentDigit], [String])
 pairWithMappings signalPatternsAndOutput = (inferMappingFrom signalPatterns, output)
@@ -37,9 +47,12 @@ pairWithMappings signalPatternsAndOutput = (inferMappingFrom signalPatterns, out
     output = signalPatternsAndOutput !! 1
 
 inferMappingFrom :: [SevenSegmentDigit] -> [SevenSegmentDigit]
-inferMappingFrom signals = (inferFiveSegmentDigits signals . inferSixSegmentDigits signals . inferDigitsWithUniqueSegmentCount signals) initialMapping
+inferMappingFrom signals = (inferZero signals . inferFiveSegmentDigits signals . inferSixSegmentDigits signals . inferDigitsWithUniqueSegmentCount signals) initialMapping
   where
     initialMapping = replicate 10 ""
+
+inferZero :: [SevenSegmentDigit] -> [SevenSegmentDigit] -> [SevenSegmentDigit]
+inferZero signals mapping = set (element 0) (head (signals \\ mapping)) mapping
 
 inferFiveSegmentDigits :: [SevenSegmentDigit] -> [SevenSegmentDigit] -> [SevenSegmentDigit]
 inferFiveSegmentDigits signals mapping = (find5 . find3 . find2) mapping
@@ -47,9 +60,13 @@ inferFiveSegmentDigits signals mapping = (find5 . find3 . find2) mapping
     find2 = set (element 2) two
     find3 = set (element 3) three
     find5 = set (element 5) five
-    two = ""
-    three = ""
-    five = ""
+    two = fromJust $ find twoSegmentsInCommonWith4 signalsOfLength6
+    three = fromJust $ find twoSegmentsInCommonWith1 signalsOfLength6
+    five = fromJust $ find threeSegmentsInCommonWith4 signalsOfLength6
+    signalsOfLength6 = filter (hasLength 5) signals
+    twoSegmentsInCommonWith1 relevantSignals = 2 == length (map (intersect relevantSignals) mapping !! 1)
+    twoSegmentsInCommonWith4 relevantSignals = 2 == length (map (intersect relevantSignals) mapping !! 4)
+    threeSegmentsInCommonWith4 relevantSignals = 3 == length (map (intersect relevantSignals) mapping !! 4)
 
 inferSixSegmentDigits :: [SevenSegmentDigit] -> [SevenSegmentDigit] -> [SevenSegmentDigit]
 inferSixSegmentDigits signals mapping = (find9 . find6) mapping
@@ -58,7 +75,7 @@ inferSixSegmentDigits signals mapping = (find9 . find6) mapping
     find9 = set (element 9) nine
     six = fromJust $ find oneSegmentInCommonWith1 signalsOfLength5
     nine = fromJust $ find twoSegmentsInCommonWith1 signalsOfLength5
-    signalsOfLength5 = filter (hasLength 5) signals
+    signalsOfLength5 = filter (hasLength 6) signals
     oneSegmentInCommonWith1 relevantSignals = 1 == length (map (intersect relevantSignals) mapping !! 1)
     twoSegmentsInCommonWith1 relevantSignals = 2 == length (map (intersect relevantSignals) mapping !! 1)
 
@@ -83,6 +100,7 @@ prepareInput2 = map (map (map sort . words) . splitOn " | ")
 
 --     be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
 --  => be abcdefg bcdefg acdefg bceg cdefg abdefg bcdef abcdf bde | abcdefg bcdef bcdefg bceg
+--  => 1  8                     4                             7
 --
 -- step one: infer uniques 1 4 7 8
 -- 1: [x, y] 4: [k,l,m,n] 7: [p,q,r] 8: [a,b,c,d,e,f,g]
