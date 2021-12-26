@@ -53,10 +53,10 @@ spec = do
   describe "generating a range" $ do
     context "given identical start and end" $
       it "should generate a single entry" $ do
-        range 0 0 `shouldBe` [0]
+        range 0 0 `shouldBe` ([0] :: [Int])
     context "given a start and a bigger end" $
       it "should generate a list incrementing by 1" $ do
-        range 0 3 `shouldBe` [0, 1, 2, 3]
+        range 0 3 `shouldBe` ([0, 1, 2, 3] :: [Int])
     context "given a start and a smaller end" $
       it "should generate a list decrementing by 1" $ do
-        range 2 0 `shouldBe` [2, 1, 0]
+        range 2 0 `shouldBe` ([2, 1, 0] :: [Int])
