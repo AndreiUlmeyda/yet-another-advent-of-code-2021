@@ -4,13 +4,13 @@ module Day08
   )
 where
 
-import Control.Arrow (ArrowZero (zeroArrow))
 import Control.Lens (element, set)
 import Data.List (elemIndex, find, findIndex, intersect, sort, (\\))
 import Data.List.Split (splitOn)
 import Data.Maybe (fromJust)
 import Day04 (PuzzleInput)
 import GHC.Conc (Signal)
+import Util (toNumberOfBase)
 
 type SevenSegmentDigit = String
 
@@ -28,14 +28,8 @@ prepareInput :: PuzzleInput -> [[SevenSegmentDigit]]
 prepareInput = map (words . (!! 1) . splitOn " | ")
 
 -- ######### Part Two #########
--- solutionDay8Part2 :: PuzzleInput -> Int
 solutionDay8Part2 :: PuzzleInput -> Int
-solutionDay8Part2 = sum . map (toNumber . applyMapping . pairWithMappings) . prepareInput2
-
-toNumber :: [Int] -> Int
-toNumber = sum . zipWith (*) powersOfTen . reverse
-  where
-    powersOfTen = iterate (* 10) 1
+solutionDay8Part2 = sum . map (toNumberOfBase 10 . applyMapping . pairWithMappings) . prepareInput2
 
 applyMapping :: ([SevenSegmentDigit], [String]) -> [Int]
 applyMapping (mapping, output) = map (\string -> debug (elemIndex string mapping) mapping output) output
@@ -117,6 +111,11 @@ prepareInput2 = map (map (map sort . words) . splitOn " | ")
 --                  0 -> 6
 -- step two: infer 6 segment digits
 --  observation: can be decided knowing whether both or only one of the segments for '1' are present, both -> '9' one -> '6'
+--  UPDATE: I missed that 0 has 6 segments as well
 -- step three: infer 5 segment digits
 --  observation: analogously to step 2, if both segments for '1' are present its '3', otherwise it can be decided by how many overlaps
 --               there are with '4' -> 2 segments for '2', 3 segments for 5
+--  UPDATE: one correct rule set is:
+--    - its a 6 if it has 6 segments and it has 1 segment in common with 1
+--    - its a 0 if it has 4 segments in common with 5
+--    - its a 9 if its the only number noch previously inferred

@@ -30,6 +30,7 @@ library
       Day06
       Day07
       Day08
+      Util
   other-modules:
       Paths_advent_of_code
   hs-source-dirs:

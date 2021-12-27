@@ -12,10 +12,11 @@ where
 import Data.Char (digitToInt)
 import Data.List (transpose)
 import Data.Tuple.Extra (both)
+import Util (toNumberOfBase)
 
 -- ######### Part One #########
 solutionDay3Part1 :: [[Char]] -> Int
-solutionDay3Part1 = uncurry (*) . both toNumber . pairWithNegation . mostCommonDigitsOf . toDiagnosticNumbers
+solutionDay3Part1 = uncurry (*) . both (toNumberOfBase 2) . pairWithNegation . mostCommonDigitsOf . toDiagnosticNumbers
 
 mostCommonDigitsOf :: [[Int]] -> [Int]
 mostCommonDigitsOf = toZerosAndOnes . biggerThanHalfTheInputLength . elementwiseSumAndLenght
@@ -40,20 +41,17 @@ biggerThanHalfTheInputLength (number, originalInputLength) = map ((>= halfTheInp
 pairWithNegation :: [Int] -> ([Int], [Int])
 pairWithNegation input = (input, map flipZerosAndOnes input)
 
-flipZerosAndOnes :: (Eq a, Num a, Num p) => a -> p
-flipZerosAndOnes digit = if digit == 0 then 1 else 0
-
-toNumber :: [Int] -> Int
-toNumber = sum . zipWith (*) powersOfTwo . reverse
-  where
-    powersOfTwo = iterate (* 2) 1
+flipZerosAndOnes :: (Eq p, Num p) => p -> p
+flipZerosAndOnes digit
+  | 0 <- digit = 1
+  | otherwise = 0
 
 toZerosAndOnes :: [Bool] -> [Int]
 toZerosAndOnes = map (\boolean -> if boolean then 1 else 0)
 
 -- ######### Part Two #########
 solutionDay3Part2 :: [[Char]] -> Int
-solutionDay3Part2 = uncurry (*) . both toNumber . pairTheTwoRatings . toDiagnosticNumbers
+solutionDay3Part2 = uncurry (*) . both (toNumberOfBase 2) . pairTheTwoRatings . toDiagnosticNumbers
 
 pairTheTwoRatings :: [[Int]] -> ([Int], [Int])
 pairTheTwoRatings numbers = (oxygenGeneratorRating numbers, co2ScrubberRating numbers)
