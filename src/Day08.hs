@@ -46,9 +46,9 @@ pairWithMappings signalPatternsAndOutput = (inferMappingFrom signalPatterns, out
     output = signalPatternsAndOutput !! 1
 
 inferMappingFrom :: [SevenSegmentDigit] -> [SevenSegmentDigit]
-inferMappingFrom signals = (inferNine signals . inferSixSegmentDigits signals . inferFiveSegmentDigits signals . inferDigitsWithUniqueSegmentCount signals) initialMapping
+inferMappingFrom signals = (inferNine signals . inferSixSegmentDigits signals . inferFiveSegmentDigits signals . inferDigitsWithUniqueSegmentCount signals) emptyMapping
   where
-    initialMapping = replicate 10 ""
+    emptyMapping = replicate 10 ""
 
 inferNine :: [SevenSegmentDigit] -> [SevenSegmentDigit] -> [SevenSegmentDigit]
 inferNine signals mapping = set (element 9) (head (signals \\ mapping)) mapping
@@ -117,5 +117,5 @@ prepareInput2 = map (map (map sort . words) . splitOn " | ")
 --               there are with '4' -> 2 segments for '2', 3 segments for 5
 --  UPDATE: one correct rule set is:
 --    - its a 6 if it has 6 segments and it has 1 segment in common with 1
---    - its a 0 if it has 4 segments in common with 5
---    - its a 9 if its the only number noch previously inferred
+--    - its a 0 if it has 6 segments and it has 4 segments in common with 5
+--    - its a 9 if it has 6 segments and its the only number noch previously inferred

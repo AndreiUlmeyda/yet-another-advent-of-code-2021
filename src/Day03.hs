@@ -19,7 +19,7 @@ solutionDay3Part1 :: [[Char]] -> Int
 solutionDay3Part1 = uncurry (*) . both (toNumberOfBase 2) . pairWithNegation . mostCommonDigitsOf . toDiagnosticNumbers
 
 mostCommonDigitsOf :: [[Int]] -> [Int]
-mostCommonDigitsOf = toZerosAndOnes . biggerThanHalfTheInputLength . elementwiseSumAndLenght
+mostCommonDigitsOf = map toZeroOrOne . biggerThanHalfTheInputLength . elementwiseSumAndLenght
 
 leastCommonDigitsOf :: [[Int]] -> [Int]
 leastCommonDigitsOf = map flipZerosAndOnes . mostCommonDigitsOf
@@ -41,13 +41,15 @@ biggerThanHalfTheInputLength (number, originalInputLength) = map ((>= halfTheInp
 pairWithNegation :: [Int] -> ([Int], [Int])
 pairWithNegation input = (input, map flipZerosAndOnes input)
 
-flipZerosAndOnes :: (Eq p, Num p) => p -> p
+flipZerosAndOnes :: Int -> Int
 flipZerosAndOnes digit
   | 0 <- digit = 1
   | otherwise = 0
 
-toZerosAndOnes :: [Bool] -> [Int]
-toZerosAndOnes = map (\boolean -> if boolean then 1 else 0)
+toZeroOrOne :: Bool -> Int
+toZeroOrOne someBoolean
+  | True <- someBoolean = 1
+  | otherwise = 0
 
 -- ######### Part Two #########
 solutionDay3Part2 :: [[Char]] -> Int
