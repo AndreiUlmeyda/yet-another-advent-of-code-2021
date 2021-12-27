@@ -32,12 +32,7 @@ solutionDay8Part2 :: PuzzleInput -> Int
 solutionDay8Part2 = sum . map (toNumberOfBase 10 . applyMapping . pairWithMappings) . prepareInput2
 
 applyMapping :: ([SevenSegmentDigit], [String]) -> [Int]
-applyMapping (mapping, output) = map (\string -> debug (elemIndex string mapping) mapping output) output
-
-debug :: Maybe Int -> [SevenSegmentDigit] -> [String] -> Int
-debug result mapping output
-  | Nothing <- result = error $ show mapping ++ "\n" ++ show output
-  | Just a <- result = a
+applyMapping (mapping, output) = map (\string -> fromJust (elemIndex string mapping)) output
 
 pairWithMappings :: [[String]] -> ([SevenSegmentDigit], [String])
 pairWithMappings signalPatternsAndOutput = (inferMappingFrom signalPatterns, output)
@@ -78,8 +73,6 @@ hasLength n list = length list == n
 
 prepareInput2 :: PuzzleInput -> [[[String]]]
 prepareInput2 = map (map (map sort . words) . splitOn " | ")
-
--- inferMapping :: [[String]] -> (Int, [Int])
 
 --     be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
 --  => be abcdefg bcdefg acdefg bceg cdefg abdefg bcdef abcdf bde | abcdefg bcdef bcdefg bceg
