@@ -1,10 +1,8 @@
 module Day09Spec (spec) where
 
-import Data.Array (Array, array, listArray)
-import Data.Array.Unboxed (UArray)
 import Day09
   ( solutionDay9Part1,
-    solutionDay9Part2,
+  -- solutionDay9Part2,
   )
 import Test.Hspec
   ( Spec,
@@ -16,16 +14,16 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
-  describe "" $ do
+  describe "assessing danger through smoke" $ do
     context "with sample data for part 1" $
-      it "should result in xxx" $ do
+      it "should result in 15" $ do
         sampleData <- lines <$> readFile "puzzle-inputs/day-09-sample"
-        solutionDay9Part1 sampleData `shouldBe` [] --listArray (1, 1) [1]
+        solutionDay9Part1 sampleData `shouldBe` 15
+    context "with actual data for part 1" $
+      it "should result in xxx" $ do
+        actualData <- lines <$> readFile "puzzle-inputs/day-09"
+        solutionDay9Part1 actualData `shouldBe` 0
 
--- context "with actual data for part 1" $
---   it "should result in 355" $ do
---     actualData <- lines <$> readFile "puzzle-inputs/day-08"
---     solutionDay8Part1 actualData `shouldBe` 355
 -- context "with sample data for part 2" $
 --   it "should result in 61229" $ do
 --     sampleData <- lines <$> readFile "puzzle-inputs/day-08-sample"

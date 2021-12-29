@@ -4,27 +4,31 @@ module Day09
   )
 where
 
-import Data.Array.Unboxed (UArray, array, bounds, inRange, indices, listArray, (!))
+import Data.Array.Unboxed (UArray, array, bounds, inRange, indices, (!))
 import Data.Char (digitToInt)
 
--- solutionDay9Part1 :: [String] -> Int
-solutionDay9Part1 input = (listOfNeighbors . toArray input . parseInput) input
+solutionDay9Part1 :: [String] -> Int
+solutionDay9Part1 = sum . computeDangerLevel . filter isMinimum . pairWithListOfNeighbors . toArray . parseInput
 
-toArray :: [String] -> [Int] -> UArray Int Int
-toArray input = listArray (0, getArraySize input - 1)
+computeDangerLevel :: [(Int, b)] -> [Int]
+computeDangerLevel = map ((+) 1 . fst)
 
--- probably needs actually indexing with tuples to avoid row indices wrapping around, maybe drop UArrays as well
-listOfNeighbors :: UArray Int Int -> [[Int]]
-listOfNeighbors smokeMeasurements = map listOfNeighborIndices (indices smokeMeasurements)
+isMinimum :: (Int, [Int]) -> Bool
+isMinimum (element, list) = element == minimum list
+
+toArray :: [Int] -> UArray (Int, Int) Int
+toArray inputInts = array bds (zip [(a, b) | a <- [0 .. 4], b <- [0 .. 9]] inputInts)
   where
-    listOfNeighborIndices targetIndex = map (smokeMeasurements !) $filter validIndex [targetIndex + neighboringRows + neighboringColumns | neighboringRows <- [-1 .. 1], neighboringColumns <- map (* 10) [-1 .. 1]]
+    bds = ((0, 0), (4, 9))
+
+pairWithListOfNeighbors :: UArray (Int, Int) Int -> [(Int, [Int])]
+pairWithListOfNeighbors smokeMeasurements = map listOfNeighborIndices (indices smokeMeasurements)
+  where
+    listOfNeighborIndices (targetX, targetY) = (smokeMeasurements ! (targetX, targetY), map (smokeMeasurements !) $ filter validIndex [(targetX + neighboringRows, targetY + neighboringColumns) | neighboringRows <- [-1 .. 1], neighboringColumns <- [-1 .. 1]])
     (sizeX, sizeY) = bounds smokeMeasurements
-    validIndex = inRange (sizeX, sizeY)
+    validIndex = inRange $ bounds smokeMeasurements
 
 parseInput :: [String] -> [Int]
 parseInput = map digitToInt . concat
-
-getArraySize :: [String] -> Int
-getArraySize a = length a * length (head a)
 
 solutionDay9Part2 = const 0
