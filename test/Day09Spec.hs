@@ -20,9 +20,9 @@ spec = do
         sampleData <- lines <$> readFile "puzzle-inputs/day-09-sample"
         solutionDay9Part1 sampleData `shouldBe` 15
     context "with actual data for part 1" $
-      it "should result in xxx" $ do
+      it "should result in 518" $ do
         actualData <- lines <$> readFile "puzzle-inputs/day-09"
-        solutionDay9Part1 actualData `shouldBe` 0
+        solutionDay9Part1 actualData `shouldBe` 518
 
 -- context "with sample data for part 2" $
 --   it "should result in 61229" $ do
