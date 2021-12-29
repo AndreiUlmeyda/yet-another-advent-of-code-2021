@@ -1,5 +1,7 @@
 module Day09Spec (spec) where
 
+import Data.Array (Array, array, listArray)
+import Data.Array.Unboxed (UArray)
 import Day09
   ( solutionDay9Part1,
     solutionDay9Part2,
@@ -17,8 +19,8 @@ spec = do
   describe "" $ do
     context "with sample data for part 1" $
       it "should result in xxx" $ do
-        sampleData <- lines <$> readFile "puzzle-inputs/day-08-sample"
-        solutionDay9Part1 sampleData `shouldBe` 0
+        sampleData <- lines <$> readFile "puzzle-inputs/day-09-sample"
+        solutionDay9Part1 sampleData `shouldBe` [] --listArray (1, 1) [1]
 
 -- context "with actual data for part 1" $
 --   it "should result in 355" $ do

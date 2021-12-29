@@ -24,7 +24,8 @@ dependencies:
 - extra
 - split
 - lens
-- text
+- array
+- ilist
 
 library:
   source-dirs: src
