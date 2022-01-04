@@ -1,8 +1,9 @@
 module Day09Spec (spec) where
 
+import Data.Array.Unboxed (UArray, array, bounds, inRange, indices, (!))
 import Day09
   ( solutionDay9Part1,
-  -- solutionDay9Part2,
+    solutionDay9Part2,
   )
 import Test.Hspec
   ( Spec,
@@ -23,11 +24,11 @@ spec = do
       it "should result in 518" $ do
         actualData <- lines <$> readFile "puzzle-inputs/day-09"
         solutionDay9Part1 actualData `shouldBe` 518
+    context "with sample data for part 2" $
+      it "should result in xxx" $ do
+        sampleData <- lines <$> readFile "puzzle-inputs/day-09-sample"
+        solutionDay9Part2 sampleData `shouldBe` (0, 0) --(1, [1]) --array ((0, 0), (0, 1)) [(1, 1)]
 
--- context "with sample data for part 2" $
---   it "should result in 61229" $ do
---     sampleData <- lines <$> readFile "puzzle-inputs/day-08-sample"
---     solutionDay8Part2 sampleData `shouldBe` 61229
 -- context "with different sample data for part 2" $
 --   it "should result in 9781" $ do
 --     sampleData <- lines <$> readFile "puzzle-inputs/day-08-smaller-sample"

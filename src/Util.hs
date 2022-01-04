@@ -3,6 +3,6 @@ module Util (toNumberOfBase) where
 type Radix = Int
 
 toNumberOfBase :: Radix -> [Int] -> Int
-toNumberOfBase radix = sum . zipWith (*) powersOfTen . reverse
+toNumberOfBase radix = sum . zipWith (*) powersOfRadix . reverse
   where
-    powersOfTen = iterate (* radix) 1
+    powersOfRadix = iterate (* radix) 1
