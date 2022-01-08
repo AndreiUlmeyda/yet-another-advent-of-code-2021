@@ -1,6 +1,7 @@
 module Day09Spec (spec) where
 
 import Data.Array.Unboxed (UArray, array, bounds, inRange, indices, (!))
+import Data.Map (fromList)
 import Day09
   ( solutionDay9Part1,
     solutionDay9Part2,
@@ -27,7 +28,7 @@ spec = do
     context "with sample data for part 2" $
       it "should result in xxx" $ do
         sampleData <- lines <$> readFile "puzzle-inputs/day-09-sample"
-        solutionDay9Part2 sampleData `shouldBe` (0, 0) --(1, [1]) --array ((0, 0), (0, 1)) [(1, 1)]
+        solutionDay9Part2 sampleData `shouldBe` fromList [] -- (array ((0, 0), (0, 1)) [((0, 0), 0)] :: UArray (Int, Int) Int) --(1, [1]) --
 
 -- context "with different sample data for part 2" $
 --   it "should result in 9781" $ do

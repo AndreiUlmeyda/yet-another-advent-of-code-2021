@@ -41,6 +41,7 @@ library
   build-depends:
       array
     , base >=4.7 && <5
+    , containers
     , extra
     , ilist
     , lens
@@ -60,6 +61,7 @@ executable advent-of-code-exe
       advent-of-code
     , array
     , base >=4.7 && <5
+    , containers
     , extra
     , ilist
     , lens
@@ -89,6 +91,7 @@ test-suite advent-of-code-test
       advent-of-code
     , array
     , base >=4.7 && <5
+    , containers
     , extra
     , hspec
     , ilist

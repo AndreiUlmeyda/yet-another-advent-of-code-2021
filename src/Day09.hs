@@ -4,9 +4,25 @@ module Day09
   )
 where
 
-import Data.Array.Unboxed (UArray, array, bounds, inRange, indices, ixmap, (!))
+import Data.Array.Unboxed
+  ( IArray,
+    Ix,
+    UArray,
+    amap,
+    array,
+    assocs,
+    bounds,
+    inRange,
+    indices,
+    ixmap,
+    range,
+    (!),
+  )
 import Data.Char (digitToInt)
+import Data.Map (Map, fromList, lookup, mapWithKey, (!))
+import Data.Maybe (fromJust)
 import Day04 (PuzzleInput)
+import GHC.Generics (UAddr)
 
 type ElevationMeasurement = Int
 
@@ -22,7 +38,7 @@ solutionDay9Part1 :: PuzzleInput -> Int
 solutionDay9Part1 = sum . computeDangerLevel . filter isMinimum . pairWithListOfNeighbors . toArray . toInt
 
 toInt :: PuzzleInput -> [[ElevationMeasurement]]
-toInt = map $ map digitToInt
+toInt = Prelude.map $ Prelude.map digitToInt
 
 toArray :: [[ElevationMeasurement]] -> UArray CoordinatePoint ElevationMeasurement
 toArray measurements = array arrayBounds (zip [(a, b) | a <- [0 .. rowCount], b <- [0 .. columnCount]] (concat measurements))
@@ -31,10 +47,10 @@ toArray measurements = array arrayBounds (zip [(a, b) | a <- [0 .. rowCount], b 
     arrayBounds = ((0, 0), (rowCount, columnCount))
 
 pairWithListOfNeighbors :: UArray CoordinatePoint ElevationMeasurement -> [(ElevationMeasurement, [NeighboringMeasurement])]
-pairWithListOfNeighbors measurements = map (listOfNeighbors measurements) (indices measurements)
+pairWithListOfNeighbors measurements = Prelude.map (listOfNeighbors measurements) (indices measurements)
 
 listOfNeighbors :: UArray CoordinatePoint ElevationMeasurement -> CoordinatePoint -> (ElevationMeasurement, [NeighboringMeasurement])
-listOfNeighbors measurements coordinate = (measurements ! coordinate, map (measurements !) (neighboringCoordinates validIndex coordinate))
+listOfNeighbors measurements coordinate = (measurements Data.Array.Unboxed.! coordinate, Prelude.map (measurements Data.Array.Unboxed.!) (neighboringCoordinates validIndex coordinate))
   where
     validIndex = inRange $ bounds measurements
 
@@ -54,22 +70,45 @@ isMinimum :: (ElevationMeasurement, [NeighboringMeasurement]) -> Bool
 isMinimum (measurement, neighboringMeasurements) = measurement == minimum neighboringMeasurements
 
 computeDangerLevel :: [(ElevationMeasurement, a)] -> [DangerLevel]
-computeDangerLevel = map ((+) 1 . fst)
+computeDangerLevel = Prelude.map ((+) 1 . fst)
 
-solutionDay9Part2 :: PuzzleInput -> CoordinatePoint
-solutionDay9Part2 = flowsTowards (0, 0) . toArray . toInt
+-- solutionDay9Part2 :: PuzzleInput -> CoordinatePoint
+solutionDay9Part2 = derp . toMap . toInt -- coords (y, x)
 
-flowsTowards :: CoordinatePoint -> UArray CoordinatePoint ElevationMeasurement -> CoordinatePoint
-flowsTowards startingCoord measurements
-  | any indexOfSmallerNeighbor neighbors = flowsTowards (head (filter indexOfSmallerNeighbor neighbors)) measurements -- head $ filter indexOfSmallerNeighbor neighbors
+derp :: Map CoordinatePoint ElevationMeasurement -> Map CoordinatePoint CoordinatePoint
+derp measurements = Data.Map.mapWithKey (flowsTowards measurements) measurements -- mapWithKey :: (k -> a -> b) -> Map k a -> Map k b
+
+toMap :: [[ElevationMeasurement]] -> Map CoordinatePoint ElevationMeasurement
+toMap measurements = fromList (zip [(a, b) | a <- [0 .. rowCount], b <- [0 .. columnCount]] (concat measurements))
+  where
+    (rowCount, columnCount) = (length measurements - 1, length (head measurements) - 1)
+
+-- flowsTowards :: Map CoordinatePoint ElevationMeasurement -> CoordinatePoint -> CoordinatePoint
+flowsTowards :: Map CoordinatePoint ElevationMeasurement -> CoordinatePoint -> ElevationMeasurement -> CoordinatePoint
+flowsTowards measurements startingCoord value
+  | any indexOfSmallerNeighbor neighbors = flowsTowards measurements (head (filter indexOfSmallerNeighbor neighbors)) (fromJust $ Data.Map.lookup (head (filter indexOfSmallerNeighbor neighbors)) measurements) -- head $ filter indexOfSmallerNeighbor neighbors
   | otherwise = startingCoord
   where
-    neighbors = neighboringCoordinates isValidIndex startingCoord
+    neighbors = neighboringCoordinatesTwo startingCoord :: [NeighboringCoordinatePoint]
     indexOfSmallerNeighbor = isSmallerThan measurements startingCoord :: CoordinatePoint -> Bool
-    isValidIndex = inRange $ bounds measurements
 
--- flowsTowards' coord measurements
---   |
+neighboringCoordinatesTwo :: CoordinatePoint -> [NeighboringCoordinatePoint]
+neighboringCoordinatesTwo (xCoord, yCoord) =
+  [ (x, y)
+    | neighboringRows <- [- immediateNeighborDistance .. immediateNeighborDistance],
+      let x = xCoord + neighboringRows,
+      neighboringColumns <- [- immediateNeighborDistance .. immediateNeighborDistance],
+      let y = yCoord + neighboringColumns
+  ]
+  where
+    immediateNeighborDistance = 1
 
-isSmallerThan :: UArray CoordinatePoint ElevationMeasurement -> CoordinatePoint -> CoordinatePoint -> Bool
-isSmallerThan measurements coord coord2 = measurements ! coord > measurements ! coord2
+isSmallerThan :: Map CoordinatePoint ElevationMeasurement -> CoordinatePoint -> CoordinatePoint -> Bool
+isSmallerThan measurements coord coord2
+  | Nothing <- Data.Map.lookup coord measurements = True
+  | Nothing <- Data.Map.lookup coord2 measurements = False
+  | otherwise = Data.Map.lookup coord measurements > Data.Map.lookup coord2 measurements
+
+-- TODO clean up unused imports
+-- TODO clean up unused dependencies
+-- TODO clean up unused functions
