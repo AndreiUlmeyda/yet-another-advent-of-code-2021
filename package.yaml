@@ -25,7 +25,6 @@ dependencies:
 - split
 - lens
 - array
-- ilist
 - containers
 
 library:
@@ -41,6 +40,7 @@ executables:
     - -with-rtsopts=-N
     - -Wall
     - -O2
+    - -fwarn-unused-imports
     dependencies:
     - advent-of-code
 
@@ -54,6 +54,7 @@ tests:
     - -with-rtsopts=-N
     - -Wall
     - -O2
+    - -fwarn-unused-imports
     dependencies:
     - advent-of-code
     - hspec

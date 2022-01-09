@@ -43,7 +43,6 @@ library
     , base >=4.7 && <5
     , containers
     , extra
-    , ilist
     , lens
     , split
   default-language: Haskell2010
@@ -56,14 +55,13 @@ executable advent-of-code-exe
       app
   default-extensions:
       TupleSections
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -O2
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -O2 -fwarn-unused-imports
   build-depends:
       advent-of-code
     , array
     , base >=4.7 && <5
     , containers
     , extra
-    , ilist
     , lens
     , split
   default-language: Haskell2010
@@ -86,7 +84,7 @@ test-suite advent-of-code-test
       test
   default-extensions:
       TupleSections
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -O2
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -O2 -fwarn-unused-imports
   build-depends:
       advent-of-code
     , array
@@ -94,7 +92,6 @@ test-suite advent-of-code-test
     , containers
     , extra
     , hspec
-    , ilist
     , lens
     , split
   default-language: Haskell2010
