@@ -5,17 +5,11 @@ module Day09
 where
 
 import Data.Array.Unboxed
-  ( IArray,
-    Ix,
-    UArray,
-    amap,
+  ( UArray,
     array,
-    assocs,
     bounds,
     inRange,
     indices,
-    ixmap,
-    range,
     (!),
   )
 import Data.Char (digitToInt)
@@ -73,21 +67,21 @@ isMinimum (measurement, neighboringMeasurements) = measurement == minimum neighb
 computeDangerLevel :: [(ElevationMeasurement, a)] -> [DangerLevel]
 computeDangerLevel = Prelude.map ((+) 1 . fst)
 
--- solutionDay9Part2 :: PuzzleInput -> CoordinatePoint
 solutionDay9Part2 :: PuzzleInput -> Int
 solutionDay9Part2 = product . take 3 . reverse . sort . map (snd . pairWithLength) . group . sort . filter (/= (-1, -1)) . elems . derp . toMap . toInt -- coords (y, x)
 
-pairWithLength asd = (head asd, length asd)
+pairWithLength :: [a] -> (a, Int)
+pairWithLength asd = (head asd, length asd) -- TODO should be present in another file, move to Util
 
+-- TODO give it a name
 derp :: Map CoordinatePoint ElevationMeasurement -> Map CoordinatePoint CoordinatePoint
-derp measurements = Data.Map.mapWithKey (flowsTowards measurements) measurements -- mapWithKey :: (k -> a -> b) -> Map k a -> Map k b
+derp measurements = Data.Map.mapWithKey (flowsTowards measurements) measurements
 
 toMap :: [[ElevationMeasurement]] -> Map CoordinatePoint ElevationMeasurement
 toMap measurements = fromList (zip [(a, b) | a <- [0 .. rowCount], b <- [0 .. columnCount]] (concat measurements))
   where
     (rowCount, columnCount) = (length measurements - 1, length (head measurements) - 1)
 
--- flowsTowards :: Map CoordinatePoint ElevationMeasurement -> CoordinatePoint -> CoordinatePoint
 flowsTowards :: Map CoordinatePoint ElevationMeasurement -> CoordinatePoint -> ElevationMeasurement -> CoordinatePoint
 flowsTowards measurements startingCoord value
   | measurements Data.Map.! startingCoord == 9 = (-1, -1)
@@ -99,7 +93,6 @@ flowsTowards measurements startingCoord value
 
 neighboringCoordinatesTwo :: CoordinatePoint -> [NeighboringCoordinatePoint]
 neighboringCoordinatesTwo (xCoord, yCoord) =
-  -- remove diagonals
   [(xCoord, yCoord + 1), (xCoord, yCoord -1), (xCoord + 1, yCoord), (xCoord - 1, yCoord)]
 
 isSmallerThan :: Map CoordinatePoint ElevationMeasurement -> CoordinatePoint -> CoordinatePoint -> Bool
