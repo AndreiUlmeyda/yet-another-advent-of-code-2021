@@ -19,7 +19,8 @@ import Data.Array.Unboxed
     (!),
   )
 import Data.Char (digitToInt)
-import Data.Map (Map, fromList, lookup, mapWithKey, (!))
+import Data.List (group, sort)
+import Data.Map (Map, elems, fromList, lookup, mapWithKey, (!))
 import Data.Maybe (fromJust)
 import Day04 (PuzzleInput)
 import GHC.Generics (UAddr)
@@ -73,7 +74,10 @@ computeDangerLevel :: [(ElevationMeasurement, a)] -> [DangerLevel]
 computeDangerLevel = Prelude.map ((+) 1 . fst)
 
 -- solutionDay9Part2 :: PuzzleInput -> CoordinatePoint
-solutionDay9Part2 = derp . toMap . toInt -- coords (y, x)
+solutionDay9Part2 :: PuzzleInput -> Int
+solutionDay9Part2 = product . take 3 . reverse . sort . map (snd . pairWithLength) . group . sort . filter (/= (-1, -1)) . elems . derp . toMap . toInt -- coords (y, x)
+
+pairWithLength asd = (head asd, length asd)
 
 derp :: Map CoordinatePoint ElevationMeasurement -> Map CoordinatePoint CoordinatePoint
 derp measurements = Data.Map.mapWithKey (flowsTowards measurements) measurements -- mapWithKey :: (k -> a -> b) -> Map k a -> Map k b
@@ -86,7 +90,8 @@ toMap measurements = fromList (zip [(a, b) | a <- [0 .. rowCount], b <- [0 .. co
 -- flowsTowards :: Map CoordinatePoint ElevationMeasurement -> CoordinatePoint -> CoordinatePoint
 flowsTowards :: Map CoordinatePoint ElevationMeasurement -> CoordinatePoint -> ElevationMeasurement -> CoordinatePoint
 flowsTowards measurements startingCoord value
-  | any indexOfSmallerNeighbor neighbors = flowsTowards measurements (head (filter indexOfSmallerNeighbor neighbors)) (fromJust $ Data.Map.lookup (head (filter indexOfSmallerNeighbor neighbors)) measurements) -- head $ filter indexOfSmallerNeighbor neighbors
+  | measurements Data.Map.! startingCoord == 9 = (-1, -1)
+  | any indexOfSmallerNeighbor neighbors = flowsTowards measurements (head (filter indexOfSmallerNeighbor neighbors)) (fromJust $ Data.Map.lookup (head (filter indexOfSmallerNeighbor neighbors)) measurements)
   | otherwise = startingCoord
   where
     neighbors = neighboringCoordinatesTwo startingCoord :: [NeighboringCoordinatePoint]
@@ -94,14 +99,8 @@ flowsTowards measurements startingCoord value
 
 neighboringCoordinatesTwo :: CoordinatePoint -> [NeighboringCoordinatePoint]
 neighboringCoordinatesTwo (xCoord, yCoord) =
-  [ (x, y)
-    | neighboringRows <- [- immediateNeighborDistance .. immediateNeighborDistance],
-      let x = xCoord + neighboringRows,
-      neighboringColumns <- [- immediateNeighborDistance .. immediateNeighborDistance],
-      let y = yCoord + neighboringColumns
-  ]
-  where
-    immediateNeighborDistance = 1
+  -- remove diagonals
+  [(xCoord, yCoord + 1), (xCoord, yCoord -1), (xCoord + 1, yCoord), (xCoord - 1, yCoord)]
 
 isSmallerThan :: Map CoordinatePoint ElevationMeasurement -> CoordinatePoint -> CoordinatePoint -> Bool
 isSmallerThan measurements coord coord2
