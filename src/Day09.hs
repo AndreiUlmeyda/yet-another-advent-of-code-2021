@@ -13,6 +13,7 @@ import Data.Map
     keys,
     lookup,
     mapMaybeWithKey,
+    member,
     (!),
   )
 import Data.Maybe (fromJust)
@@ -32,22 +33,25 @@ type DangerLevel = Int
 type BasinIndex = Int
 
 solutionDay9Part1 :: PuzzleInput -> DangerLevel
-solutionDay9Part1 = sum . computeDangerLevel . filter isMinimum . pairWithListOfNeighbors . toMap . toInt
+solutionDay9Part1 = sum . computeDangerLevels . map fst . filter isMinimum . pairWithNeighboringMeasurements . toMap . toInt
 
 toInt :: PuzzleInput -> [[ElevationMeasurement]]
 toInt = map $ map digitToInt
 
-pairWithListOfNeighbors :: Map CoordinatePoint ElevationMeasurement -> [(ElevationMeasurement, [NeighboringMeasurement])]
-pairWithListOfNeighbors measurements = map (listOfNeighbors measurements) (keys measurements)
+pairWithNeighboringMeasurements :: Map CoordinatePoint ElevationMeasurement -> [(ElevationMeasurement, [NeighboringMeasurement])]
+pairWithNeighboringMeasurements measurements = map (listOfNeighbors measurements) (keys measurements)
 
 listOfNeighbors :: Map CoordinatePoint ElevationMeasurement -> CoordinatePoint -> (ElevationMeasurement, [NeighboringMeasurement])
-listOfNeighbors measurements coordinate = (measurements ! coordinate, (map fromJust . filter (/= Nothing) . map (`lookup` measurements)) (neighboringCoordinates coordinate))
+listOfNeighbors measurements coordinate = (currentElevation, neighboringElevations)
+  where
+    currentElevation = measurements ! coordinate :: ElevationMeasurement
+    neighboringElevations = (map (measurements !) . filter (`member` measurements)) (neighboringCoordinates coordinate)
 
 isMinimum :: (ElevationMeasurement, [NeighboringMeasurement]) -> Bool
 isMinimum (measurement, neighboringMeasurements) = measurement < minimum neighboringMeasurements
 
-computeDangerLevel :: [(ElevationMeasurement, a)] -> [DangerLevel]
-computeDangerLevel = map ((+) 1 . fst)
+computeDangerLevels :: [ElevationMeasurement] -> [DangerLevel]
+computeDangerLevels = map (1 +)
 
 solutionDay9Part2 :: PuzzleInput -> BasinIndex
 solutionDay9Part2 = multiplyLargestBasinSizes . computeFlowTargets . toMap . toInt
@@ -64,24 +68,25 @@ computeFlowTargets measurements = mapMaybeWithKey (flowsTowards measurements) me
 toMap :: [[ElevationMeasurement]] -> Map CoordinatePoint ElevationMeasurement
 toMap measurements = fromList (zip [(a, b) | a <- [0 .. rowCount], b <- [0 .. columnCount]] (concat measurements))
   where
-    (rowCount, columnCount) = (length measurements - 1, length (head measurements) - 1)
+    (rowCount, columnCount) = (length measurements - 1, length (head measurements) - 1) :: (Int, Int)
 
 flowsTowards :: Map CoordinatePoint ElevationMeasurement -> CoordinatePoint -> ElevationMeasurement -> Maybe CoordinatePoint
 flowsTowards measurements startingCoord value
   | measurements ! startingCoord == 9 = Nothing
-  | any indexOfSmallerNeighbor neighbors = flowsTowards measurements (head (filter indexOfSmallerNeighbor neighbors)) (fromJust $ lookup (head (filter indexOfSmallerNeighbor neighbors)) measurements)
+  | any isSmallerNeighbor neighbors = flowsTowards measurements (head smallerNeighbors) (fromJust $ lookup (head smallerNeighbors) measurements)
   | otherwise = Just startingCoord
   where
     neighbors = neighboringCoordinates startingCoord :: [NeighboringCoordinatePoint]
-    indexOfSmallerNeighbor = isSmallerThan measurements startingCoord :: CoordinatePoint -> Bool
+    isSmallerNeighbor = isSmallerThan measurements startingCoord :: NeighboringCoordinatePoint -> Bool
+    smallerNeighbors = filter isSmallerNeighbor neighbors :: [NeighboringCoordinatePoint]
 
 neighboringCoordinates :: CoordinatePoint -> [NeighboringCoordinatePoint]
 neighboringCoordinates (xCoord, yCoord) =
   [(xCoord, yCoord + 1), (xCoord, yCoord -1), (xCoord + 1, yCoord), (xCoord - 1, yCoord)]
 
--- TODO this function needs to be expressed more clearly
+-- TODO this function needs to be named/expressed more clearly
 isSmallerThan :: Map CoordinatePoint ElevationMeasurement -> CoordinatePoint -> CoordinatePoint -> Bool
 isSmallerThan measurements coord coord2
-  | Nothing <- lookup coord measurements = True
+  | Nothing <- lookup coord measurements = False
   | Nothing <- lookup coord2 measurements = False
   | otherwise = lookup coord measurements > lookup coord2 measurements
