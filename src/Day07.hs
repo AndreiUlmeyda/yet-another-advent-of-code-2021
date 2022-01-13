@@ -28,7 +28,7 @@ cheapestAlignmentWith costFunction crabPositions = minimum $ map (alignAtPositio
   where
     possiblePositions = [(minimum crabPositions) .. (maximum crabPositions)]
 
-alignAtPosition :: CostFunction -> [CrabPosition] -> TargetPosition -> AlignmentCost
+alignAtPosition :: CostFunction -> [CrabPosition] -> (TargetPosition -> AlignmentCost)
 alignAtPosition costFunction crabPositions targetAlignment = sum $ map (costFunction targetAlignment) crabPositions
 
 alignmentCost :: CrabPosition -> TargetPosition -> AlignmentCost
