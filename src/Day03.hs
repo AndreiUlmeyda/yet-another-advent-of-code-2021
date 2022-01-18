@@ -10,7 +10,6 @@ module Day03
 where
 
 import Data.Char (digitToInt)
-import Data.List (transpose)
 import Data.Tuple.Extra (both)
 import Util (toNumberOfBase)
 
@@ -36,7 +35,7 @@ addElementwise = zipWith (+)
 biggerThanHalfTheInputLength :: ([Int], Int) -> [Bool]
 biggerThanHalfTheInputLength (number, originalInputLength) = map ((>= halfTheInputLength) . fromIntegral) number
   where
-    halfTheInputLength = fromIntegral originalInputLength / 2
+    halfTheInputLength = fromIntegral originalInputLength / 2 :: Double
 
 pairWithNegation :: [Int] -> ([Int], [Int])
 pairWithNegation input = (input, map flipZerosAndOnes input)

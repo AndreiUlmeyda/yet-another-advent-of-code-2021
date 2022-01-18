@@ -5,11 +5,10 @@ module Day08
 where
 
 import Control.Lens (element, set)
-import Data.List (elemIndex, find, findIndex, intersect, sort, (\\))
+import Data.List (elemIndex, find, intersect, sort, (\\))
 import Data.List.Split (splitOn)
 import Data.Maybe (fromJust)
 import Day04 (PuzzleInput)
-import GHC.Conc (Signal)
 import Util (toNumberOfBase)
 
 type SevenSegmentDigit = String

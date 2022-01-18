@@ -4,7 +4,6 @@ module Day07
   )
 where
 
-import Data.List (sort)
 import Data.List.Split (splitOn)
 import Day04 (PuzzleInput)
 

@@ -17,7 +17,7 @@ copyright:           "2021 Author name here"
 # common to point users to the README.md file.
 description:         Please see the README on GitHub at <https://github.com/githubuser/advent-of-code#readme>
 
-default-extensions: TupleSections
+default-extensions: TupleSections, MultiWayIf 
 
 dependencies:
 - base >= 4.7 && < 5
@@ -29,18 +29,20 @@ dependencies:
 
 library:
   source-dirs: src
+  ghc-options:
+    - -threaded
+    - -O2
+    - -Wall
+    - -fwarn-unused-imports
+
 
 executables:
   advent-of-code-exe:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
-    - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    - -Wall
-    - -O2
-    - -fwarn-unused-imports
     dependencies:
     - advent-of-code
 
@@ -49,12 +51,9 @@ tests:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
-    - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    - -Wall
-    - -O2
-    - -fwarn-unused-imports
+    
     dependencies:
     - advent-of-code
     - hspec

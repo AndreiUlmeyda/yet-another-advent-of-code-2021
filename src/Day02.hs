@@ -44,8 +44,8 @@ solutionDay2Part2 = uncurry (*) . sumDistancesConsideringAim (0, 0) . computeAim
 data SubDirection = Forward | Up | Down deriving (Show, Eq)
 
 data SubMovementPlus = MkSubMovementPlus
-  { direction :: SubDirection,
-    magnitude :: Int,
+  { movementDirection :: SubDirection,
+    movementMagnitude :: Int,
     aim :: Int
   }
   deriving (Show, Eq)
@@ -72,15 +72,15 @@ computeAim movements
 
 updateAimWithPreviousMovement :: SubMovementPlus -> SubMovementPlus -> SubMovementPlus
 updateAimWithPreviousMovement firstMovement secondMovement
-  | MkSubMovementPlus Down secondMagnitude secondAim <- secondMovement = MkSubMovementPlus Down secondMagnitude (aim firstMovement + secondMagnitude)
-  | MkSubMovementPlus Up secondMagnitude secondAim <- secondMovement = MkSubMovementPlus Up secondMagnitude (aim firstMovement - secondMagnitude)
-  | otherwise = MkSubMovementPlus (direction secondMovement) (magnitude secondMovement) (aim firstMovement)
+  | MkSubMovementPlus Down secondMagnitude _ <- secondMovement = MkSubMovementPlus Down secondMagnitude (aim firstMovement + secondMagnitude)
+  | MkSubMovementPlus Up secondMagnitude _ <- secondMovement = MkSubMovementPlus Up secondMagnitude (aim firstMovement - secondMagnitude)
+  | otherwise = MkSubMovementPlus (movementDirection secondMovement) (movementMagnitude secondMovement) (aim firstMovement)
 
 sumDistancesConsideringAim :: (Int, Int) -> [SubMovementPlus] -> (Int, Int)
 sumDistancesConsideringAim position movements
   | [] <- movements = position
-  | MkSubMovementPlus Forward magnitude aim : rest <- movements = sumDistancesConsideringAim (newX, newY) rest
+  | MkSubMovementPlus Forward _ _ : rest <- movements = sumDistancesConsideringAim (newX, newY) rest
   | otherwise = sumDistancesConsideringAim position (tail movements)
   where
-    newX = fst position + magnitude (head movements)
-    newY = snd position + (magnitude (head movements) * aim (head movements))
+    newX = fst position + movementMagnitude (head movements)
+    newY = snd position + (movementMagnitude (head movements) * aim (head movements))
