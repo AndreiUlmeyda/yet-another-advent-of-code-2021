@@ -34,6 +34,7 @@ library:
     - -O2
     - -Wall
     - -fwarn-unused-imports
+    - -Wunused-local-binds 
 
 
 executables:

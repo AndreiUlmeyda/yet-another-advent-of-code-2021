@@ -19,8 +19,6 @@ type DrawnNumbersInput = [String]
 
 type DrawnNumbers = [Int]
 
-type Boards = [[Int]]
-
 type PuzzleInput = [String]
 
 type BoardsInput = [String]

@@ -18,7 +18,7 @@ import Data.Map
   )
 import Data.Maybe (fromJust)
 import Day04 (PuzzleInput)
-import Prelude hiding (lookup, (!))
+import Prelude hiding (lookup)
 
 type ElevationMeasurement = Int
 

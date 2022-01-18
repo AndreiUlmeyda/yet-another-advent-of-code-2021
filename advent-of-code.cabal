@@ -39,7 +39,7 @@ library
       src
   default-extensions:
       TupleSections, MultiWayIf
-  ghc-options: -threaded -O2 -Wall -fwarn-unused-imports
+  ghc-options: -threaded -O2 -Wall -fwarn-unused-imports -Wunused-local-binds
   build-depends:
       array
     , base >=4.7 && <5
