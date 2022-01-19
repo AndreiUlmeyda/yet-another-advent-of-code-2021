@@ -8,6 +8,7 @@ import Control.Lens (element, set)
 import Data.List (group, sort)
 import Data.List.Split (splitOn)
 import Day04 (PuzzleInput)
+import Prelude
 
 data FishPopulation = MkFishPopulation
   { age0 :: Int,

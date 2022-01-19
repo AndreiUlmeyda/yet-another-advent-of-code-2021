@@ -1,5 +1,7 @@
 module Util (toNumberOfBase) where
 
+import Prelude
+
 type Radix = Int
 
 toNumberOfBase :: Radix -> [Int] -> Int

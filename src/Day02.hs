@@ -9,6 +9,8 @@ module Day02
   )
 where
 
+import Prelude
+
 -- ######### Part One #########
 solutionDay2Part1 :: [String] -> Int
 solutionDay2Part1 = multiplyDirections . sumDistances . map (toSubMovement . words)

@@ -24,7 +24,6 @@ dependencies:
 - extra
 - split
 - lens
-- array
 - containers
 
 library:
@@ -33,9 +32,22 @@ library:
     - -threaded
     - -O2
     - -Wall
-    - -fwarn-unused-imports
-    - -Wunused-local-binds 
-
+    - -Wincomplete-uni-patterns
+    - -Wmonomorphism-restriction
+    - -Wimplicit-prelude
+    - -Wmissing-local-signatures
+    - -Wmissing-exported-signatures
+    - -Wmissing-export-lists
+    - -Wmissing-home-modules
+    - -Widentities
+    - -Wredundant-constraints
+    - -Wpartial-fields
+    - -Wall-missed-specialisations
+    - -Wcpp-undef
+    - -Wmissing-deriving-strategies
+    - -Wunused-packages
+    - -Wunused-type-patterns
+    - -Wcompat
 
 executables:
   advent-of-code-exe:

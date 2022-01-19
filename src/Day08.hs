@@ -10,6 +10,7 @@ import Data.List.Split (splitOn)
 import Data.Maybe (fromJust)
 import Day04 (PuzzleInput)
 import Util (toNumberOfBase)
+import Prelude
 
 type SevenSegmentDigit = String
 

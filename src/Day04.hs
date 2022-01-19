@@ -14,6 +14,7 @@ import Data.List.Split
     splitOn,
   )
 import Data.Tuple.Extra (both)
+import Prelude
 
 type DrawnNumbersInput = [String]
 

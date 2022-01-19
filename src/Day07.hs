@@ -6,6 +6,7 @@ where
 
 import Data.List.Split (splitOn)
 import Day04 (PuzzleInput)
+import Prelude
 
 type AlignmentCost = Int
 

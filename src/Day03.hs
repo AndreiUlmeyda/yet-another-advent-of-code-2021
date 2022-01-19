@@ -12,6 +12,7 @@ where
 import Data.Char (digitToInt)
 import Data.Tuple.Extra (both)
 import Util (toNumberOfBase)
+import Prelude
 
 -- ######### Part One #########
 solutionDay3Part1 :: [[Char]] -> Int

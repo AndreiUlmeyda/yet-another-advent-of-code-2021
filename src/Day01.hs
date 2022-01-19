@@ -1,5 +1,7 @@
 module Day01 (solutionDay1Part1, solutionDay1Part2) where
 
+import Prelude
+
 -- ######### Part One #########
 solutionDay1Part1 :: [String] -> Int
 solutionDay1Part1 = countIncreases . map read

@@ -10,6 +10,7 @@ where
 import Data.List (group, sortBy)
 import Data.List.Split (splitOn)
 import Day04 (PuzzleInput)
+import Prelude
 
 data Line = MkLine
   { startX :: Int,
