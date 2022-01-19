@@ -26,7 +26,7 @@ type BoardsInput = [String]
 
 type Board = [[(Int, Marking)]]
 
-data Marking = Marked | UnMarked deriving (Show, Eq)
+data Marking = Marked | UnMarked deriving stock (Show, Eq)
 
 type BingoStrategy = DrawnNumbers -> [Board] -> (Int, Board)
 

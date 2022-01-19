@@ -18,7 +18,7 @@ data Line = MkLine
     endX :: Int,
     endY :: Int
   }
-  deriving (Show, Eq)
+  deriving stock (Show, Eq)
 
 type Coordinate = (Int, Int)
 

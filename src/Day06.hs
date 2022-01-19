@@ -21,7 +21,7 @@ data FishPopulation = MkFishPopulation
     age7 :: Int,
     age8 :: Int
   }
-  deriving (Show, Eq)
+  deriving stock (Show, Eq)
 
 -- ######### Part One #########
 solutionDay6Part1 :: PuzzleInput -> Int

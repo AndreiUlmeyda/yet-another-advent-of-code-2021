@@ -19,7 +19,7 @@ data SubMovement = MkSubMovement
   { xDirection :: Int,
     yDirection :: Int
   }
-  deriving (Show, Eq)
+  deriving stock (Show, Eq)
 
 multiplyDirections :: SubMovement -> Int
 multiplyDirections (MkSubMovement x y) = x * y

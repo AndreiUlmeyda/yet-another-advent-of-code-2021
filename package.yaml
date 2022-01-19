@@ -17,7 +17,7 @@ copyright:           "2021 Author name here"
 # common to point users to the README.md file.
 description:         Please see the README on GitHub at <https://github.com/githubuser/advent-of-code#readme>
 
-default-extensions: TupleSections, MultiWayIf 
+default-extensions: TupleSections, MultiWayIf, DerivingStrategies
 
 dependencies:
 - base >= 4.7 && < 5
