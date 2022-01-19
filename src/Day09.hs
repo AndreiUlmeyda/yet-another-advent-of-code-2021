@@ -71,7 +71,7 @@ toMap measurements = fromList (zip [(a, b) | a <- [0 .. rowCount], b <- [0 .. co
     (rowCount, columnCount) = (length measurements - 1, length (head measurements) - 1) :: (Int, Int)
 
 flowsTowards :: Map CoordinatePoint ElevationMeasurement -> CoordinatePoint -> ElevationMeasurement -> Maybe CoordinatePoint
-flowsTowards measurements startingCoord value
+flowsTowards measurements startingCoord _
   | measurements ! startingCoord == 9 = Nothing
   | any isSmallerNeighbor neighbors = flowsTowards measurements (head smallerNeighbors) (fromJust $ lookup (head smallerNeighbors) measurements)
   | otherwise = Just startingCoord

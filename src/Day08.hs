@@ -18,10 +18,10 @@ solutionDay8Part1 :: PuzzleInput -> Int
 solutionDay8Part1 = sum . map countUniqueLengths . prepareInput
 
 countUniqueLengths :: [SevenSegmentDigit] -> Int
-countUniqueLengths = length . filter isOfUniqueLength
+countUniqueLengths = length . filter (isOfEitherLength [2, 3, 4, 7])
 
-isOfUniqueLength :: Foldable t => t a -> Bool
-isOfUniqueLength a = length a `elem` [2, 3, 4, 7]
+isOfEitherLength :: [Int] -> [a] -> Bool
+isOfEitherLength validLengths a = length a `elem` validLengths
 
 prepareInput :: PuzzleInput -> [[SevenSegmentDigit]]
 prepareInput = map (words . (!! 1) . splitOn " | ")
