@@ -37,20 +37,20 @@ toSubMovement directionAndDistance
   | otherwise = MkSubMovement 0 0
   where
     direction = head directionAndDistance
-    distance = read (head (tail directionAndDistance))
+    distance = read (head (tail directionAndDistance)) :: Int
 
 -- ######### Part Two #########
 solutionDay2Part2 :: [String] -> Int
 solutionDay2Part2 = uncurry (*) . sumDistancesConsideringAim (0, 0) . computeAim . firstAimZero . map (toSubMovementPlus . words)
 
-data SubDirection = Forward | Up | Down deriving (Show, Eq)
+data SubDirection = Forward | Up | Down deriving stock (Show, Eq)
 
 data SubMovementPlus = MkSubMovementPlus
   { movementDirection :: SubDirection,
     movementMagnitude :: Int,
     aim :: Int
   }
-  deriving (Show, Eq)
+  deriving stock (Show, Eq)
 
 toSubMovementPlus :: [String] -> SubMovementPlus
 toSubMovementPlus directionAndMagnitude
