@@ -69,13 +69,13 @@ spec = do
         parseChunks "(" `shouldBe` [MkInCompleteChunk '(' []]
     context "given a matched bracket" $
       it "should result in a complete chunk with correct characters" $ do
-        parseChunks "()" `shouldBe` [MkChunk '(' ')' []]
+        parseChunks "()" `shouldBe` [MkChunk '(' []]
     context "given two matched brackets in a row" $
       it "should result in a list of two complete chunks with correct characters" $ do
-        parseChunks "()()" `shouldBe` [MkChunk '(' ')' [], MkChunk '(' ')' []]
+        parseChunks "()()" `shouldBe` [MkChunk '(' [], MkChunk '(' []]
     context "given two nested brackets, each of them matched" $
       it "should result in a chunk inside of the 'innerChunks' of the first" $ do
-        parseChunks "(<>)" `shouldBe` [MkChunk '(' ')' [MkChunk '<' '>' []]]
+        parseChunks "(<>)" `shouldBe` [MkChunk '(' [MkChunk '<' []]]
     context "given " $
       it "should result in " $ do
         parseChunks "(<)" `shouldBe` [MkChunk '(' ')' [MkInCompleteChunk '<' []]]

@@ -17,7 +17,6 @@ import Prelude
 data Chunk
   = MkChunk
       { openingCharacter :: Char,
-        closingCharacter :: Char,
         innerChunks :: [Chunk]
       }
   | MkInCompleteChunk
@@ -53,21 +52,21 @@ parseChunks stringOfBrackets
   | [a] <- stringOfBrackets = [MkInCompleteChunk a []]
   | (first : second : rest) <- stringOfBrackets,
     second == fromJust (matchingCharacter first) =
-    MkChunk first second [] : parseChunks rest
+    MkChunk first [] : parseChunks rest
   | (first : second : rest) <- stringOfBrackets,
     second /= fromJust (matchingCharacter first),
     Nothing <- contentOfFirstBracket (second : rest) =
     [MkInCompleteChunk first (parseChunks (second : rest))]
   | (first : _ : _) <- stringOfBrackets, -- TODO in dire, dire need of a refactoring
     Just bracketContent <- contentOfFirstBracket stringOfBrackets,
-    Just closingBracket <- matchingCharacter first,
+    Just _ <- matchingCharacter first,
     Just partAfterClosingBracket <- stripPrefix bracketContent stringOfBrackets =
-    [MkChunk first closingBracket (parseChunks partAfterClosingBracket)]
+    [MkChunk first (parseChunks partAfterClosingBracket)]
   | (first : _ : _) <- stringOfBrackets,
     Just bracketContent <- contentOfFirstBracket stringOfBrackets,
-    Just closingBracket <- matchingCharacter first,
+    Just _ <- matchingCharacter first,
     Nothing <- stripPrefix bracketContent stringOfBrackets =
-    [MkChunk first closingBracket (parseChunks bracketContent)]
+    [MkChunk first (parseChunks bracketContent)]
   | otherwise = error $ "unhandled case during parsing: " ++ stringOfBrackets -- TODO convert to a total function
 
 contentOfFirstBracket :: String -> Maybe String
