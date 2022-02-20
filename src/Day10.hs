@@ -29,10 +29,82 @@ solutionDay10Part1 :: PuzzleInput -> [Maybe Char]
 solutionDay10Part1 = map firstCorruptCharacter
 
 firstCorruptCharacter :: String -> Maybe Char
-firstCorruptCharacter input
-  | [] <- input = Nothing
-  | [] <- removeMatchingBrackets input = Nothing
-  | otherwise = Just $ head $ removeMatchingBrackets input
+firstCorruptCharacter = firstCorruptCharacter' []
+
+-- firstCorruptCharacter [] = Nothing
+-- firstCorruptCharacter [singleBracket] = if isClosingCharacter singleBracket then Just singleBracket else Nothing
+-- firstCorruptCharacter (first : second : rest)
+--   | isOpeningCharacter second = firstCorruptCharacter (second : rest)
+--   | otherwise = if first `isClosedBy` second then firstCorruptCharacter rest else Just second
+
+firstCorruptCharacter' :: String -> String -> Maybe Char
+firstCorruptCharacter' _ [] = Nothing
+firstCorruptCharacter' openedBrackets (first : rest)
+  | isOpeningCharacter first = firstCorruptCharacter' (openedBrackets ++ [first]) rest
+  | isClosingCharacter first,
+    null openedBrackets =
+    Just first
+  | isClosingCharacter first,
+    last openedBrackets `isClosedBy` first =
+    firstCorruptCharacter' (init openedBrackets) rest
+  | otherwise = Just first
+
+--   | (not . null) openedBrackets,
+--     last openedBrackets `isClosedBy` first =
+--     firstCorruptCharacter' (init openedBrackets) rest
+--   | first `isClosedBy` second = firstCorruptCharacter' openedBrackets rest
+--   | otherwise = Just second
+--   where
+--     second = head rest
+
+-- firstCorruptCharacter' :: String -> String -> Maybe Char
+-- firstCorruptCharacter' _ [] = Nothing
+-- firstCorruptCharacter' openedBrackets [singleBracket] =
+--   if isClosingCharacter singleBracket && singleBracket `notElem` map matchingCharacter' openedBrackets
+--     then Just singleBracket
+--     else Nothing
+-- firstCorruptCharacter' openedBrackets (first : second : rest)
+--   | (not . null) openedBrackets,
+--     last openedBrackets `isClosedBy` first =
+--     firstCorruptCharacter' (init openedBrackets) (second : rest)
+--   | isOpeningCharacter second = firstCorruptCharacter' (openedBrackets ++ [first]) (second : rest)
+--   | first `isClosedBy` second = firstCorruptCharacter' openedBrackets rest
+--   | otherwise = Just second
+
+isOpeningCharacter :: Char -> Bool
+isOpeningCharacter = not . isClosingCharacter
+
+isClosingCharacter :: Char -> Bool
+isClosingCharacter character = character `elem` ")}]>"
+
+-- fst  snd
+-- o    o -> yes
+-- o    c -> only if they match
+-- c    o -> only if it closes something / yes
+-- c    c -> only if it closes something
+
+-- closes :: Char -> Char -> Bool
+-- closes second first
+--   | Nothing <- matchingCharacter first = False
+--   | Just match <- matchingCharacter first = match == second
+
+-- test case: first character is a closing one
+-- the last recursion needs to recurse solely on the part until the next closing
+-- bracket of first
+
+-- {(... -> fst {, snd (, rest ... => ask about whether fCC rest returns anything
+-- => returns nothing ->
+-- => returns something ->
+
+-- rest OR second : rest ???? =>
+
+-- (<)>
+
+-- {([(<{}[<>[]}>{[]{[(<()> - Expected ], but found } instead.
+-- [[<[([]))<([[{}[[()]]] - Expected ], but found ) instead.
+-- [{[{({}]{}}([{[{{{}}([] - Expected ), but found ] instead.
+-- [<(<(<(<{}))><([]([]() - Expected >, but found ) instead.
+-- <{([([[(<>()){}]>(<<{{ - Expected ], but found > instead.
 
 removeMatchingBrackets :: String -> String
 removeMatchingBrackets [] = []
@@ -110,10 +182,21 @@ matchingCharacter '{' = Just '}'
 matchingCharacter '<' = Just '>'
 matchingCharacter _ = Nothing
 
+matchingCharacter' :: Char -> Char
+matchingCharacter' '(' = ')'
+matchingCharacter' '[' = ']'
+matchingCharacter' '{' = '}'
+matchingCharacter' '<' = '>'
+matchingCharacter' _ = error "fuck me"
+
+isClosedBy :: Char -> Char -> Bool
+isClosedBy '(' ')' = True
+isClosedBy '[' ']' = True
+isClosedBy '{' '}' = True
+isClosedBy '<' '>' = True
+isClosedBy _ _ = False
+
 solutionDay10Part2 :: PuzzleInput -> Int
 solutionDay10Part2 = const 0
 
 -- TODO avoid unsafe functions entirely
-
--- from a first and a rest, construct a chunk
--- chunks can be

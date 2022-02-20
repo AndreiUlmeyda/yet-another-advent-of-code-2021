@@ -78,36 +78,63 @@ spec = do
         parseChunks "(<>)" `shouldBe` [MkChunk '(' [MkChunk '<' []]]
     context "given " $
       it "should result in " $ do
-        parseChunks "(<)" `shouldBe` [MkChunk '(' ')' [MkInCompleteChunk '<' []]]
+        parseChunks "(<)" `shouldBe` [MkChunk '(' [MkInCompleteChunk '<' []]]
+    context "given " $
+      it "should result in " $ do
+        parseChunks "({}})" `shouldBe` [MkChunk '(' [MkChunk '{' [], MkInCompleteChunk '}' []]]
 
-  -- describe "" $ do
-  --   context "with sample data for part 1" $
-  --     it "should result in x" $ do
-  --       sampleData <- lines <$> readFile "puzzle-inputs/day-10-sample"
-  --       solutionDay10Part1 sampleData `shouldBe` []
+  describe "" $ do
+    context "with sample data for part 1" $
+      it "should result in x" $ do
+        sampleData <- lines <$> readFile "puzzle-inputs/day-10-sample"
+        solutionDay10Part1 sampleData `shouldBe` []
+
   describe "finding the first corrupt character" $ do
     context "given the empty string" $
       it "should result in Nothing" $ do
         firstCorruptCharacter "" `shouldBe` Nothing
-    context "given a single unmatched bracket" $
-      it "should result in Just that character" $ do
-        firstCorruptCharacter "(" `shouldBe` Just '('
-    context "given a pair of matched brackets" $
-      it "should result in Nothing" $ do
-        firstCorruptCharacter "()" `shouldBe` Nothing
-    context "given a pair of matched brackets folloew by a different single bracket" $
-      it "should result in the different bracket" $ do
-        firstCorruptCharacter "()<" `shouldBe` Just '<'
-    context "given nested pairs of matched brackets" $
-      it "should result in Nothing" $ do
-        firstCorruptCharacter "({<>})" `shouldBe` Nothing
-    context "given a matching bracket which is outside of the current chunk" $
-      it "should result an unmatched bracket" $ do
-        firstCorruptCharacter "(<)>" `shouldBe` Just '<'
-
--- context "given a matching bracket which is outside of the current chunk" $
---   it "should result an unmatched bracket" $ do
---     firstCorruptCharacter "({}()<)>" `shouldBe` Just '<'
+  context "given a single unmatched bracket" $
+    it "should result in Nothing, since only an incorrect closing character counts as corrupt" $ do
+      firstCorruptCharacter "(" `shouldBe` Nothing
+  context "given a single closing bracket" $
+    it "should result just that closing braket" $ do
+      firstCorruptCharacter ")" `shouldBe` Just ')'
+  context "given a differing closing bracket" $
+    it "should result in the closing bracket" $ do
+      firstCorruptCharacter "(]" `shouldBe` Just ']'
+  context "given a matching bracket which is outside of the current chunk" $
+    it "should result in an unmatched bracket" $ do
+      firstCorruptCharacter "(<)>" `shouldBe` Just ')'
+  context "given a pair of matched brackets" $
+    it "should result in Nothing" $ do
+      firstCorruptCharacter "()" `shouldBe` Nothing
+  context "given a pair of matched brackets followed by a different opening bracket" $
+    it "should result in Nothing" $ do
+      firstCorruptCharacter "()<" `shouldBe` Nothing
+  context "given a matching bracket which is outside of the current chunk" $
+    it "should result in an unmatched bracket" $ do
+      firstCorruptCharacter "({}()<)>" `shouldBe` Just ')'
+  context "given " $
+    it "should result in " $ do
+      firstCorruptCharacter "({<>}" `shouldBe` Nothing
+  context "given nested pairs of matched brackets" $
+    it "should result in Nothing" $ do
+      firstCorruptCharacter "({<>})" `shouldBe` Nothing
+  context "given TODO" $
+    it "should result in TODO" $ do
+      firstCorruptCharacter "{([(<{}[<>[]}>{[]{[(<()>" `shouldBe` Just '}'
+  context "given TODO" $
+    it "should result in TODO" $ do
+      firstCorruptCharacter "[[<[([]))<([[{}[[()]]]" `shouldBe` Just ')'
+  context "given TODO" $
+    it "should result in TODO" $ do
+      firstCorruptCharacter "[{[{({}]{}}([{[{{{}}([]" `shouldBe` Just ']'
+  context "given TODO" $
+    it "should result in TODO" $ do
+      firstCorruptCharacter "[<(<(<(<{}))><([]([]()" `shouldBe` Just ')'
+  context "given TODO" $
+    it "should result in TODO" $ do
+      firstCorruptCharacter "<{([([[(<>()){}]>(<<{{" `shouldBe` Just '>'
 
 -- context "with actual data for part 1" $
 --   it "should result in 518" $ do
