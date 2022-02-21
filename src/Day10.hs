@@ -7,15 +7,18 @@ where
 
 import Data.Maybe (mapMaybe)
 import Day04 (PuzzleInput)
+import Prelude
 
 solutionDay10Part1 :: PuzzleInput -> Int
 solutionDay10Part1 = sum . map score . mapMaybe firstCorruptCharacter
 
+score :: Char -> Int
 score symbol
   | ')' <- symbol = 3
   | ']' <- symbol = 57
   | '}' <- symbol = 1197
   | '>' <- symbol = 25137
+  | otherwise = 0
 
 firstCorruptCharacter :: String -> Maybe Char
 firstCorruptCharacter = firstCorruptCharacter' []

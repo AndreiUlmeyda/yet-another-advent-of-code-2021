@@ -15,16 +15,15 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
-  describe "" $ do
+  describe "scoring corrupted lines" $ do
     context "with sample data for part 1" $
-      it "should result in x" $ do
+      it "should result in 26397" $ do
         sampleData <- lines <$> readFile "puzzle-inputs/day-10-sample"
         solutionDay10Part1 sampleData `shouldBe` 26397
-
-  context "with actual data for part 1" $
-    it "should result in 311949" $ do
-      actualData <- lines <$> readFile "puzzle-inputs/day-10"
-      solutionDay10Part1 actualData `shouldBe` 311949
+    context "with actual data for part 1" $
+      it "should result in 311949" $ do
+        actualData <- lines <$> readFile "puzzle-inputs/day-10"
+        solutionDay10Part1 actualData `shouldBe` 311949
 
   describe "finding the first corrupt character" $ do
     context "given the empty string" $
@@ -36,41 +35,35 @@ spec = do
   context "given a single closing bracket" $
     it "should result just that closing braket" $ do
       firstCorruptCharacter ")" `shouldBe` Just ')'
-  context "given a differing closing bracket" $
+  context "given an opening bracket followed by a non matching closing bracket" $
     it "should result in the closing bracket" $ do
       firstCorruptCharacter "(]" `shouldBe` Just ']'
-  context "given a matching bracket which is outside of the current chunk" $
-    it "should result in an unmatched bracket" $ do
-      firstCorruptCharacter "(<)>" `shouldBe` Just ')'
   context "given a pair of matched brackets" $
     it "should result in Nothing" $ do
       firstCorruptCharacter "()" `shouldBe` Nothing
   context "given a pair of matched brackets followed by a different opening bracket" $
     it "should result in Nothing" $ do
       firstCorruptCharacter "()<" `shouldBe` Nothing
-  context "given a matching bracket which is outside of the current chunk" $
-    it "should result in an unmatched bracket" $ do
-      firstCorruptCharacter "({}()<)>" `shouldBe` Just ')'
-  context "given " $
-    it "should result in " $ do
+  context "given a missing closing bracket with otherwise matching ones" $
+    it "should result in Nothing" $ do
       firstCorruptCharacter "({<>}" `shouldBe` Nothing
   context "given nested pairs of matched brackets" $
     it "should result in Nothing" $ do
       firstCorruptCharacter "({<>})" `shouldBe` Nothing
-  context "given TODO" $
-    it "should result in TODO" $ do
+  context "given sample line 1" $
+    it "should result in }" $ do
       firstCorruptCharacter "{([(<{}[<>[]}>{[]{[(<()>" `shouldBe` Just '}'
-  context "given TODO" $
-    it "should result in TODO" $ do
+  context "given sample line 2" $
+    it "should result in )" $ do
       firstCorruptCharacter "[[<[([]))<([[{}[[()]]]" `shouldBe` Just ')'
-  context "given TODO" $
-    it "should result in TODO" $ do
+  context "given sample line 3" $
+    it "should result in ]" $ do
       firstCorruptCharacter "[{[{({}]{}}([{[{{{}}([]" `shouldBe` Just ']'
-  context "given TODO" $
-    it "should result in TODO" $ do
+  context "given sample line 4" $
+    it "should result in )" $ do
       firstCorruptCharacter "[<(<(<(<{}))><([]([]()" `shouldBe` Just ')'
-  context "given TODO" $
-    it "should result in TODO" $ do
+  context "given sample line 5" $
+    it "should result in >" $ do
       firstCorruptCharacter "<{([([[(<>()){}]>(<<{{" `shouldBe` Just '>'
 
 -- context "with sample data for part 2" $
