@@ -22,9 +22,9 @@ spec = do
         solutionDay10Part1 sampleData `shouldBe` 26397
 
   context "with actual data for part 1" $
-    it "should result in x" $ do
+    it "should result in 311949" $ do
       actualData <- lines <$> readFile "puzzle-inputs/day-10"
-      solutionDay10Part1 actualData `shouldBe` 0
+      solutionDay10Part1 actualData `shouldBe` 311949
 
   describe "finding the first corrupt character" $ do
     context "given the empty string" $
