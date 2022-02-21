@@ -5,10 +5,17 @@ module Day10
   )
 where
 
+import Data.Maybe (mapMaybe)
 import Day04 (PuzzleInput)
 
-solutionDay10Part1 :: PuzzleInput -> [Maybe Char]
-solutionDay10Part1 = map firstCorruptCharacter
+solutionDay10Part1 :: PuzzleInput -> Int
+solutionDay10Part1 = sum . map score . mapMaybe firstCorruptCharacter
+
+score symbol
+  | ')' <- symbol = 3
+  | ']' <- symbol = 57
+  | '}' <- symbol = 1197
+  | '>' <- symbol = 25137
 
 firstCorruptCharacter :: String -> Maybe Char
 firstCorruptCharacter = firstCorruptCharacter' []

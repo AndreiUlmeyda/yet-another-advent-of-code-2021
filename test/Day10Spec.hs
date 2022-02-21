@@ -15,11 +15,16 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
-  -- describe "" $ do
-  --   context "with sample data for part 1" $
-  --     it "should result in x" $ do
-  --       sampleData <- lines <$> readFile "puzzle-inputs/day-10-sample"
-  --       solutionDay10Part1 sampleData `shouldBe` []
+  describe "" $ do
+    context "with sample data for part 1" $
+      it "should result in x" $ do
+        sampleData <- lines <$> readFile "puzzle-inputs/day-10-sample"
+        solutionDay10Part1 sampleData `shouldBe` 26397
+
+  context "with actual data for part 1" $
+    it "should result in x" $ do
+      actualData <- lines <$> readFile "puzzle-inputs/day-10"
+      solutionDay10Part1 actualData `shouldBe` 0
 
   describe "finding the first corrupt character" $ do
     context "given the empty string" $
@@ -68,10 +73,6 @@ spec = do
     it "should result in TODO" $ do
       firstCorruptCharacter "<{([([[(<>()){}]>(<<{{" `shouldBe` Just '>'
 
--- context "with actual data for part 1" $
---   it "should result in 518" $ do
---     actualData <- lines <$> readFile "puzzle-inputs/day-09"
---     solutionDay9Part1 actualData `shouldBe` 518
 -- context "with sample data for part 2" $
 --   it "should result in 1134" $ do
 --     sampleData <- lines <$> readFile "puzzle-inputs/day-09-sample"
