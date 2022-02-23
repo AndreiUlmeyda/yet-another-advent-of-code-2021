@@ -74,8 +74,8 @@ complementaryBracket _ = error "derp"
 scoreLine :: String -> Int
 scoreLine = scoreLine' 0
 
-scoreLine' totalScore [] = totalScore
-scoreLine' totalScore (firstBracket : rest) = scoreLine' (totalScore * 5 + scoreBracketPartTwo firstBracket) rest
+scoreLine' :: Int -> String -> Int
+scoreLine' = foldl (\totalScore bracket -> totalScore * 5 + scoreBracketPartTwo bracket)
 
 scoreBracketPartTwo :: Char -> Int
 scoreBracketPartTwo bracket
@@ -86,8 +86,6 @@ scoreBracketPartTwo bracket
   | otherwise = 0
 
 median :: Ord a => [a] -> a
-median list = ((!! halfTheInputLength) . sort) list
-  where
-    halfTheInputLength = length list `div` 2
+median list = ((!! (length list `div` 2)) . sort) list
 
 -- TODO avoid unsafe functions entirely
