@@ -1,7 +1,7 @@
 module Day10
   ( solutionDay10Part1,
     solutionDay10Part2,
-    firstCorruptCharacter,
+    firstCorruptBracket,
   )
 where
 
@@ -10,10 +10,20 @@ import Data.Maybe (isNothing, mapMaybe)
 import Day04 (PuzzleInput)
 import Prelude
 
-solutionDay10Part1 :: PuzzleInput -> Int
-solutionDay10Part1 = sum . map scoreBracket . mapMaybe firstCorruptCharacter
+type Bracket = Char
 
-scoreBracket :: Char -> Int
+type Line = [Bracket]
+
+type OpenedBrackets = [Bracket]
+
+type BracketScore = Int
+
+type LineScore = Int
+
+solutionDay10Part1 :: PuzzleInput -> Int
+solutionDay10Part1 = sum . map scoreBracket . mapMaybe firstCorruptBracket
+
+scoreBracket :: Bracket -> BracketScore
 scoreBracket bracket
   | ')' <- bracket = 3
   | ']' <- bracket = 57
@@ -21,28 +31,28 @@ scoreBracket bracket
   | '>' <- bracket = 25137
   | otherwise = 0
 
-firstCorruptCharacter :: String -> Maybe Char
-firstCorruptCharacter = firstCorruptCharacter' []
+firstCorruptBracket :: Line -> Maybe Bracket
+firstCorruptBracket = firstCorruptBracket' []
 
-firstCorruptCharacter' :: String -> String -> Maybe Char
-firstCorruptCharacter' _ [] = Nothing
-firstCorruptCharacter' openedBrackets (first : rest)
-  | isOpeningCharacter first = firstCorruptCharacter' (first : openedBrackets) rest
-  | isClosingCharacter first,
+firstCorruptBracket' :: OpenedBrackets -> Line -> Maybe Bracket
+firstCorruptBracket' _ [] = Nothing
+firstCorruptBracket' openedBrackets (first : rest)
+  | isOpeningBracket first = firstCorruptBracket' (first : openedBrackets) rest
+  | isClosingBracket first,
     null openedBrackets =
     Just first
-  | isClosingCharacter first,
+  | isClosingBracket first,
     head openedBrackets `isClosedBy` first =
-    firstCorruptCharacter' (tail openedBrackets) rest
+    firstCorruptBracket' (tail openedBrackets) rest
   | otherwise = Just first
 
-isOpeningCharacter :: Char -> Bool
-isOpeningCharacter = not . isClosingCharacter
+isOpeningBracket :: Bracket -> Bool
+isOpeningBracket = not . isClosingBracket
 
-isClosingCharacter :: Char -> Bool
-isClosingCharacter character = character `elem` ")}]>"
+isClosingBracket :: Bracket -> Bool
+isClosingBracket character = character `elem` ")}]>"
 
-isClosedBy :: Char -> Char -> Bool
+isClosedBy :: Bracket -> Bracket -> Bool
 isClosedBy '(' ')' = True
 isClosedBy '[' ']' = True
 isClosedBy '{' '}' = True
@@ -50,34 +60,34 @@ isClosedBy '<' '>' = True
 isClosedBy _ _ = False
 
 solutionDay10Part2 :: PuzzleInput -> Int
-solutionDay10Part2 = median . map (scoreLine . completeLine) . filter (isNothing . firstCorruptCharacter)
+solutionDay10Part2 = median . map (scoreLine . completeLine) . filter (isNothing . firstCorruptBracket)
 
-completeLine :: String -> String
+completeLine :: Line -> Line
 completeLine = completeLine' []
 
-completeLine' :: String -> String -> String
+completeLine' :: OpenedBrackets -> Line -> Line
 completeLine' openedBrackets [] = map complementaryBracket openedBrackets
 completeLine' openedBrackets (first : rest)
-  | isOpeningCharacter first = completeLine' (first : openedBrackets) rest
-  | isClosingCharacter first,
+  | isOpeningBracket first = completeLine' (first : openedBrackets) rest
+  | isClosingBracket first,
     head openedBrackets `isClosedBy` first =
     completeLine' (tail openedBrackets) rest
   | otherwise = map complementaryBracket openedBrackets -- unify the first pattern with this one
 
-complementaryBracket :: Char -> Char
+complementaryBracket :: Bracket -> Bracket
 complementaryBracket '(' = ')'
 complementaryBracket '{' = '}'
 complementaryBracket '[' = ']'
 complementaryBracket '<' = '>'
 complementaryBracket _ = error "derp"
 
-scoreLine :: String -> Int
+scoreLine :: Line -> LineScore
 scoreLine = scoreLine' 0
 
-scoreLine' :: Int -> String -> Int
+scoreLine' :: LineScore -> Line -> LineScore
 scoreLine' = foldl (\totalScore bracket -> totalScore * 5 + scoreBracketPartTwo bracket)
 
-scoreBracketPartTwo :: Char -> Int
+scoreBracketPartTwo :: Bracket -> BracketScore
 scoreBracketPartTwo bracket
   | ')' <- bracket = 1
   | ']' <- bracket = 2

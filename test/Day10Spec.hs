@@ -1,7 +1,7 @@
 module Day10Spec (spec) where
 
 import Day10
-  ( firstCorruptCharacter,
+  ( firstCorruptBracket,
     solutionDay10Part1,
     solutionDay10Part2,
   )
@@ -39,40 +39,40 @@ spec = do
   describe "finding the first corrupt character" $ do
     context "given the empty string" $
       it "should result in Nothing" $ do
-        firstCorruptCharacter "" `shouldBe` Nothing
+        firstCorruptBracket "" `shouldBe` Nothing
   context "given a single unmatched bracket" $
     it "should result in Nothing, since only an incorrect closing character counts as corrupt" $ do
-      firstCorruptCharacter "(" `shouldBe` Nothing
+      firstCorruptBracket "(" `shouldBe` Nothing
   context "given a single closing bracket" $
     it "should result just that closing braket" $ do
-      firstCorruptCharacter ")" `shouldBe` Just ')'
+      firstCorruptBracket ")" `shouldBe` Just ')'
   context "given an opening bracket followed by a non matching closing bracket" $
     it "should result in the closing bracket" $ do
-      firstCorruptCharacter "(]" `shouldBe` Just ']'
+      firstCorruptBracket "(]" `shouldBe` Just ']'
   context "given a pair of matched brackets" $
     it "should result in Nothing" $ do
-      firstCorruptCharacter "()" `shouldBe` Nothing
+      firstCorruptBracket "()" `shouldBe` Nothing
   context "given a pair of matched brackets followed by a different opening bracket" $
     it "should result in Nothing" $ do
-      firstCorruptCharacter "()<" `shouldBe` Nothing
+      firstCorruptBracket "()<" `shouldBe` Nothing
   context "given a missing closing bracket with otherwise matching ones" $
     it "should result in Nothing" $ do
-      firstCorruptCharacter "({<>}" `shouldBe` Nothing
+      firstCorruptBracket "({<>}" `shouldBe` Nothing
   context "given nested pairs of matched brackets" $
     it "should result in Nothing" $ do
-      firstCorruptCharacter "({<>})" `shouldBe` Nothing
+      firstCorruptBracket "({<>})" `shouldBe` Nothing
   context "given sample line 1" $
     it "should result in }" $ do
-      firstCorruptCharacter "{([(<{}[<>[]}>{[]{[(<()>" `shouldBe` Just '}'
+      firstCorruptBracket "{([(<{}[<>[]}>{[]{[(<()>" `shouldBe` Just '}'
   context "given sample line 2" $
     it "should result in )" $ do
-      firstCorruptCharacter "[[<[([]))<([[{}[[()]]]" `shouldBe` Just ')'
+      firstCorruptBracket "[[<[([]))<([[{}[[()]]]" `shouldBe` Just ')'
   context "given sample line 3" $
     it "should result in ]" $ do
-      firstCorruptCharacter "[{[{({}]{}}([{[{{{}}([]" `shouldBe` Just ']'
+      firstCorruptBracket "[{[{({}]{}}([{[{{{}}([]" `shouldBe` Just ']'
   context "given sample line 4" $
     it "should result in )" $ do
-      firstCorruptCharacter "[<(<(<(<{}))><([]([]()" `shouldBe` Just ')'
+      firstCorruptBracket "[<(<(<(<{}))><([]([]()" `shouldBe` Just ')'
   context "given sample line 5" $
     it "should result in >" $ do
-      firstCorruptCharacter "<{([([[(<>()){}]>(<<{{" `shouldBe` Just '>'
+      firstCorruptBracket "<{([([[(<>()){}]>(<<{{" `shouldBe` Just '>'
