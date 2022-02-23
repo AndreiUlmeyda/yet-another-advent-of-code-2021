@@ -27,13 +27,13 @@ firstCorruptCharacter = firstCorruptCharacter' []
 firstCorruptCharacter' :: String -> String -> Maybe Char
 firstCorruptCharacter' _ [] = Nothing
 firstCorruptCharacter' openedBrackets (first : rest)
-  | isOpeningCharacter first = firstCorruptCharacter' (openedBrackets ++ [first]) rest
+  | isOpeningCharacter first = firstCorruptCharacter' (first : openedBrackets) rest
   | isClosingCharacter first,
     null openedBrackets =
     Just first
   | isClosingCharacter first,
-    last openedBrackets `isClosedBy` first =
-    firstCorruptCharacter' (init openedBrackets) rest
+    head openedBrackets `isClosedBy` first =
+    firstCorruptCharacter' (tail openedBrackets) rest
   | otherwise = Just first
 
 isOpeningCharacter :: Char -> Bool
