@@ -5,36 +5,55 @@ module Day10
   )
 where
 
-import Data.List (sort)
+import Data.List (find, sort)
 import Data.Maybe (isNothing, mapMaybe)
 import Day04 (PuzzleInput)
 import Prelude
 
-type Bracket = Char
+type BracketSymbol = Char
 
-type Line = [Bracket]
+type Line = [BracketSymbol]
 
-type OpenedBrackets = [Bracket]
+type OpenedBrackets = [BracketSymbol]
 
 type BracketScore = Int
 
 type LineScore = Int
 
+data Bracket = MkBracket
+  { openingSymbol :: Char,
+    closingSymbol :: Char,
+    scorePartOne :: Int,
+    scorePartTwo :: Int
+  }
+
+bracketDefinitions :: [Bracket]
+bracketDefinitions =
+  [ MkBracket '(' ')' 3 1,
+    MkBracket '[' ']' 57 2,
+    MkBracket '{' '}' 1197 3,
+    MkBracket '<' '>' 25137 4
+  ]
+
+defaultScore :: BracketScore
+defaultScore = 0
+
+-- ######### Part One #########
 solutionDay10Part1 :: PuzzleInput -> Int
 solutionDay10Part1 = sum . map scoreBracket . mapMaybe firstCorruptBracket
 
-scoreBracket :: Bracket -> BracketScore
-scoreBracket bracket
-  | ')' <- bracket = 3
-  | ']' <- bracket = 57
-  | '}' <- bracket = 1197
-  | '>' <- bracket = 25137
-  | otherwise = 0
+scoreBracket :: BracketSymbol -> BracketScore
+scoreBracket symbol
+  | Nothing <- firstDefinitionMatchingClosingBracket symbol = defaultScore
+  | Just bracketDefinition <- firstDefinitionMatchingClosingBracket symbol = scorePartOne bracketDefinition
 
-firstCorruptBracket :: Line -> Maybe Bracket
+firstDefinitionMatchingClosingBracket :: Char -> Maybe Bracket
+firstDefinitionMatchingClosingBracket symbol = find (\bracket -> closingSymbol bracket == symbol) bracketDefinitions
+
+firstCorruptBracket :: Line -> Maybe BracketSymbol
 firstCorruptBracket = firstCorruptBracket' []
 
-firstCorruptBracket' :: OpenedBrackets -> Line -> Maybe Bracket
+firstCorruptBracket' :: OpenedBrackets -> Line -> Maybe BracketSymbol
 firstCorruptBracket' _ [] = Nothing
 firstCorruptBracket' openedBrackets (first : rest)
   | isOpeningBracket first = firstCorruptBracket' (first : openedBrackets) rest
@@ -46,40 +65,46 @@ firstCorruptBracket' openedBrackets (first : rest)
     firstCorruptBracket' (tail openedBrackets) rest
   | otherwise = Just first
 
-isOpeningBracket :: Bracket -> Bool
+isOpeningBracket :: BracketSymbol -> Bool
 isOpeningBracket = not . isClosingBracket
 
-isClosingBracket :: Bracket -> Bool
-isClosingBracket character = character `elem` ")}]>"
+isClosingBracket :: BracketSymbol -> Bool
+isClosingBracket symbol
+  | Nothing <- firstDefinitionMatchingClosingBracket symbol = False
+  | otherwise = True
 
-isClosedBy :: Bracket -> Bracket -> Bool
-isClosedBy '(' ')' = True
-isClosedBy '[' ']' = True
-isClosedBy '{' '}' = True
-isClosedBy '<' '>' = True
-isClosedBy _ _ = False
+isClosedBy :: BracketSymbol -> BracketSymbol -> Bool
+isClosedBy firstSymbol potentiallyClosingSymbol
+  | Nothing <- matchingBracketDefinition = False
+  | Just bracketDefinition <- matchingBracketDefinition = firstSymbol == openingSymbol bracketDefinition
+  where
+    matchingBracketDefinition = firstDefinitionMatchingClosingBracket potentiallyClosingSymbol
 
+-- ######### Part Two #########
 solutionDay10Part2 :: PuzzleInput -> Int
-solutionDay10Part2 = median . map (scoreLine . completeLine) . filter (isNothing . firstCorruptBracket)
+solutionDay10Part2 = median . map (scoreLine . completeLine) . incompleteLines
+
+incompleteLines :: [Line] -> [Line]
+incompleteLines = filter (isNothing . firstCorruptBracket)
 
 completeLine :: Line -> Line
 completeLine = completeLine' []
 
 completeLine' :: OpenedBrackets -> Line -> Line
-completeLine' openedBrackets [] = map complementaryBracket openedBrackets
+completeLine' openedBrackets [] = mapMaybe complementaryBracket openedBrackets
 completeLine' openedBrackets (first : rest)
   | isOpeningBracket first = completeLine' (first : openedBrackets) rest
   | isClosingBracket first,
     head openedBrackets `isClosedBy` first =
     completeLine' (tail openedBrackets) rest
-  | otherwise = map complementaryBracket openedBrackets -- unify the first pattern with this one
+  | otherwise = mapMaybe complementaryBracket openedBrackets -- unify the first pattern with this one
 
-complementaryBracket :: Bracket -> Bracket
-complementaryBracket '(' = ')'
-complementaryBracket '{' = '}'
-complementaryBracket '[' = ']'
-complementaryBracket '<' = '>'
-complementaryBracket _ = error "derp"
+complementaryBracket :: BracketSymbol -> Maybe BracketSymbol
+complementaryBracket symbol
+  | Nothing <- firstDefinitionMatchingOpeningBracket = Nothing
+  | Just bracketDefinition <- firstDefinitionMatchingOpeningBracket = Just $ closingSymbol bracketDefinition
+  where
+    firstDefinitionMatchingOpeningBracket = find (\bracket -> openingSymbol bracket == symbol) bracketDefinitions
 
 scoreLine :: Line -> LineScore
 scoreLine = scoreLine' 0
@@ -87,13 +112,10 @@ scoreLine = scoreLine' 0
 scoreLine' :: LineScore -> Line -> LineScore
 scoreLine' = foldl (\totalScore bracket -> totalScore * 5 + scoreBracketPartTwo bracket)
 
-scoreBracketPartTwo :: Bracket -> BracketScore
-scoreBracketPartTwo bracket
-  | ')' <- bracket = 1
-  | ']' <- bracket = 2
-  | '}' <- bracket = 3
-  | '>' <- bracket = 4
-  | otherwise = 0
+scoreBracketPartTwo :: BracketSymbol -> BracketScore
+scoreBracketPartTwo symbol
+  | Nothing <- firstDefinitionMatchingClosingBracket symbol = defaultScore
+  | Just bracketDefinition <- firstDefinitionMatchingClosingBracket symbol = scorePartTwo bracketDefinition
 
 median :: Ord a => [a] -> a
 median list = ((!! (length list `div` 2)) . sort) list
