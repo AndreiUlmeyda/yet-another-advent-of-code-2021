@@ -6,7 +6,7 @@ module Day10
 where
 
 import Data.List (find, sort)
-import Data.Maybe (isNothing, mapMaybe)
+import Data.Maybe (isNothing, listToMaybe, mapMaybe)
 import Day04 (PuzzleInput)
 import Prelude
 
@@ -42,14 +42,6 @@ defaultScore = 0
 solutionDay10Part1 :: PuzzleInput -> Int
 solutionDay10Part1 = sum . map scoreBracket . mapMaybe firstCorruptBracket
 
-scoreBracket :: BracketSymbol -> BracketScore
-scoreBracket symbol
-  | Nothing <- firstDefinitionMatchingClosingBracket symbol = defaultScore
-  | Just bracketDefinition <- firstDefinitionMatchingClosingBracket symbol = scorePartOne bracketDefinition
-
-firstDefinitionMatchingClosingBracket :: Char -> Maybe Bracket
-firstDefinitionMatchingClosingBracket symbol = find (\bracket -> closingSymbol bracket == symbol) bracketDefinitions
-
 firstCorruptBracket :: Line -> Maybe BracketSymbol
 firstCorruptBracket = firstCorruptBracket' []
 
@@ -58,12 +50,21 @@ firstCorruptBracket' _ [] = Nothing
 firstCorruptBracket' openedBrackets (first : rest)
   | isOpeningBracket first = firstCorruptBracket' (first : openedBrackets) rest
   | isClosingBracket first,
-    null openedBrackets =
+    Nothing <- listToMaybe openedBrackets =
     Just first
   | isClosingBracket first,
-    head openedBrackets `isClosedBy` first =
+    Just lastOpenedBracket <- listToMaybe openedBrackets,
+    lastOpenedBracket `isClosedBy` first =
     firstCorruptBracket' (tail openedBrackets) rest
   | otherwise = Just first
+
+scoreBracket :: BracketSymbol -> BracketScore
+scoreBracket symbol
+  | Nothing <- firstDefinitionMatchingClosingBracket symbol = defaultScore
+  | Just bracketDefinition <- firstDefinitionMatchingClosingBracket symbol = scorePartOne bracketDefinition
+
+firstDefinitionMatchingClosingBracket :: Char -> Maybe Bracket
+firstDefinitionMatchingClosingBracket symbol = find (\bracket -> closingSymbol bracket == symbol) bracketDefinitions
 
 isOpeningBracket :: BracketSymbol -> Bool
 isOpeningBracket = not . isClosingBracket
@@ -95,7 +96,8 @@ completeLine' openedBrackets [] = mapMaybe complementaryBracket openedBrackets
 completeLine' openedBrackets (first : rest)
   | isOpeningBracket first = completeLine' (first : openedBrackets) rest
   | isClosingBracket first,
-    head openedBrackets `isClosedBy` first =
+    Just lastOpenedBracket <- listToMaybe openedBrackets,
+    lastOpenedBracket `isClosedBy` first =
     completeLine' (tail openedBrackets) rest
   | otherwise = mapMaybe complementaryBracket openedBrackets -- unify the first pattern with this one
 
@@ -120,4 +122,4 @@ scoreBracketPartTwo symbol
 median :: Ord a => [a] -> a
 median list = ((!! (length list `div` 2)) . sort) list
 
--- TODO avoid unsafe functions entirely
+-- TODO avoid unsafe functions entirely ... in progress
