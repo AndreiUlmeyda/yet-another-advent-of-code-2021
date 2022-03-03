@@ -11,6 +11,21 @@ where
 
 import Prelude
 
+directionForward :: String
+directionForward = "forward"
+
+directionUp :: String
+directionUp = "up"
+
+directionDown :: String
+directionDown = "down"
+
+defaultAim :: Int
+defaultAim = 0
+
+defaultMagnitude :: Int
+defaultMagnitude = 0
+
 -- ######### Part One #########
 solutionDay2Part1 :: [String] -> Int
 solutionDay2Part1 = multiplyDirections . sumDistances . map (toSubMovement . words)
@@ -31,9 +46,9 @@ sumDistances = foldl sumDistances' (MkSubMovement 0 0)
 
 toSubMovement :: [String] -> SubMovement
 toSubMovement directionAndDistance
-  | direction == "forward" = MkSubMovement distance 0
-  | direction == "down" = MkSubMovement 0 distance
-  | direction == "up" = MkSubMovement 0 (- distance)
+  | direction == directionForward = MkSubMovement distance 0
+  | direction == directionDown = MkSubMovement 0 distance
+  | direction == directionUp = MkSubMovement 0 (- distance)
   | otherwise = MkSubMovement 0 0
   where
     direction = head directionAndDistance
@@ -41,7 +56,7 @@ toSubMovement directionAndDistance
 
 -- ######### Part Two #########
 solutionDay2Part2 :: [String] -> Int
-solutionDay2Part2 = uncurry (*) . sumDistancesConsideringAim (0, 0) . computeAim . firstAimZero . map (toSubMovementPlus . words)
+solutionDay2Part2 = uncurry (*) . sumDistancesConsideringAim startingPoint . computeAim . firstAimZero . map (toSubMovementPlus . words)
 
 data SubDirection = Forward | Up | Down deriving stock (Show, Eq)
 
@@ -53,14 +68,13 @@ data SubMovementPlus = MkSubMovementPlus
   deriving stock (Show, Eq)
 
 toSubMovementPlus :: [String] -> SubMovementPlus
-toSubMovementPlus directionAndMagnitude
-  | direction == "forward" = MkSubMovementPlus Forward magnitude 0
-  | direction == "down" = MkSubMovementPlus Down magnitude 0
-  | direction == "up" = MkSubMovementPlus Up magnitude 0
-  | otherwise = MkSubMovementPlus Forward 0 0
+toSubMovementPlus [directionString, magnitudeString]
+  | directionForward == directionString = MkSubMovementPlus Forward magnitude defaultAim
+  | directionDown == directionString = MkSubMovementPlus Down magnitude defaultAim
+  | directionUp == directionString = MkSubMovementPlus Up magnitude defaultAim
   where
-    direction = head directionAndMagnitude
-    magnitude = read (head (tail directionAndMagnitude)) :: Int
+    magnitude = read magnitudeString :: Int
+toSubMovementPlus _ = MkSubMovementPlus Forward defaultMagnitude defaultAim
 
 firstAimZero :: [SubMovementPlus] -> [SubMovementPlus]
 firstAimZero movements
@@ -71,6 +85,9 @@ computeAim :: [SubMovementPlus] -> [SubMovementPlus]
 computeAim movements
   | firstMovement : secondMovement : rest <- movements = firstMovement : computeAim (updateAimWithPreviousMovement firstMovement secondMovement : rest)
   | otherwise = movements
+
+startingPoint :: (Int, Int)
+startingPoint = (0, 0)
 
 updateAimWithPreviousMovement :: SubMovementPlus -> SubMovementPlus -> SubMovementPlus
 updateAimWithPreviousMovement firstMovement secondMovement
