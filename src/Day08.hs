@@ -42,28 +42,41 @@ pairWithMappings signalPatternsAndOutput = (inferMappingFrom signalPatterns, out
 
 inferMappingFrom :: [SevenSegmentDigit] -> [SevenSegmentDigit]
 inferMappingFrom signals =
-  ( infer 9 lastMissingMapping
-      . infer 0 (segmentsInCommonWithDigitAmongSignalsOfLength 4 5 6)
-      . inferFive
-      . infer 6 (segmentsInCommonWithDigitAmongSignalsOfLength 1 1 6)
-      . infer 3 (segmentsInCommonWithDigitAmongSignalsOfLength 2 1 5)
-      . infer 2 (segmentsInCommonWithDigitAmongSignalsOfLength 2 4 5)
-      . infer 8 (isOfUniqueLength 7)
-      . infer 7 (isOfUniqueLength 3)
-      . infer 4 (isOfUniqueLength 4)
-      . infer 1 (isOfUniqueLength 2)
+  ( infer 9 (lastMissingMapping signals)
+      . infer 0 (segmentsInCommonWithDigitAmongSignalsOfLength signals 4 5 6)
+      . inferFive signals
+      . infer 6 (segmentsInCommonWithDigitAmongSignalsOfLength signals 1 1 6)
+      . infer 3 (segmentsInCommonWithDigitAmongSignalsOfLength signals 2 1 5)
+      . infer 2 (segmentsInCommonWithDigitAmongSignalsOfLength signals 2 4 5)
+      . infer 8 (isOfUniqueLength signals 7)
+      . infer 7 (isOfUniqueLength signals 3)
+      . infer 4 (isOfUniqueLength signals 4)
+      . infer 1 (isOfUniqueLength signals 2)
   )
     emptyMapping
-  where
-    infer mappingEntry inferenceStrategy previousMapping = set (element mappingEntry) (inferenceStrategy previousMapping) previousMapping
-    isOfUniqueLength targetLength _ = fromJust (find (hasLength targetLength) signals)
-    segmentsInCommonWithDigitAmongSignalsOfLength segmentNumber digit signalLength mapping = fromJust (find (\signal -> segmentNumber == length (map (intersect signal) mapping !! digit)) (signalsOfLength signalLength))
-    signalsOfLength targetLength = filter (hasLength targetLength) signals
-    lastMissingMapping mapping = head (signals \\ mapping)
-    inferFive mapping = (set (element 5) $ fromJust $ find (certainDigitsInCommonWith1And4 mapping) $ signalsOfLength 5) mapping
-    certainDigitsInCommonWith1And4 mapping relevantSignals = 3 == length (map (intersect relevantSignals) mapping !! 4) && 1 == length (map (intersect relevantSignals) mapping !! 1)
 
--- TODO generalize further to include inference of '5', clean up the where clause, try to clarify further with types / type synonyms
+infer :: Int -> ([SevenSegmentDigit] -> SevenSegmentDigit) -> [SevenSegmentDigit] -> [SevenSegmentDigit]
+infer mappingEntry inferenceStrategy previousMapping = set (element mappingEntry) (inferenceStrategy previousMapping) previousMapping
+
+segmentsInCommonWithDigitAmongSignalsOfLength :: [SevenSegmentDigit] -> Int -> Int -> Int -> [SevenSegmentDigit] -> SevenSegmentDigit
+segmentsInCommonWithDigitAmongSignalsOfLength signals segmentNumber digit signalLength mapping = fromJust (find (\signal -> segmentNumber == length (map (intersect signal) mapping !! digit)) (signalsOfLength signalLength signals))
+
+inferFive :: [SevenSegmentDigit] -> [SevenSegmentDigit] -> [SevenSegmentDigit]
+inferFive signals mapping = (set (element 5) $ fromJust $ find (certainDigitsInCommonWith1And4 mapping) $ signalsOfLength 5 signals) mapping
+
+certainDigitsInCommonWith1And4 :: Eq a => [[a]] -> [a] -> Bool
+certainDigitsInCommonWith1And4 mapping relevantSignals = 3 == length (map (intersect relevantSignals) mapping !! 4) && 1 == length (map (intersect relevantSignals) mapping !! 1)
+
+isOfUniqueLength :: [SevenSegmentDigit] -> Int -> [SevenSegmentDigit] -> SevenSegmentDigit
+isOfUniqueLength signals targetLength = const $ fromJust (find (hasLength targetLength) signals)
+
+lastMissingMapping :: [SevenSegmentDigit] -> [SevenSegmentDigit] -> SevenSegmentDigit
+lastMissingMapping signals mapping = head (signals \\ mapping)
+
+signalsOfLength :: Int -> [SevenSegmentDigit] -> [SevenSegmentDigit]
+signalsOfLength targetLength = filter (hasLength targetLength)
+
+-- TODO generalize further to include inference of '5', try to clarify further with types / type synonyms
 
 emptyMapping :: [String]
 emptyMapping = replicate 10 ""
