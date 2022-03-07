@@ -14,6 +14,8 @@ import Prelude
 
 type SevenSegmentDigit = String
 
+type Mapping = [SevenSegmentDigit]
+
 type InferenceStrategy = [SevenSegmentDigit] -> SevenSegmentDigit
 
 -- ######### Part One #########
@@ -33,16 +35,16 @@ prepareInput = map (words . (!! 1) . splitOn " | ")
 solutionDay8Part2 :: PuzzleInput -> Int
 solutionDay8Part2 = sum . map (toNumberOfBase 10 . applyMapping . pairWithMappings) . prepareInput2
 
-applyMapping :: ([SevenSegmentDigit], [String]) -> [Int]
+applyMapping :: (Mapping, [SevenSegmentDigit]) -> [Int]
 applyMapping (mapping, output) = map (\string -> fromJust (elemIndex string mapping)) output
 
-pairWithMappings :: [[String]] -> ([SevenSegmentDigit], [String])
+pairWithMappings :: [[String]] -> (Mapping, [SevenSegmentDigit])
 pairWithMappings signalPatternsAndOutput = (inferMappingFrom signalPatterns, output)
   where
     signalPatterns = head signalPatternsAndOutput
     output = signalPatternsAndOutput !! 1
 
-inferMappingFrom :: [SevenSegmentDigit] -> [SevenSegmentDigit]
+inferMappingFrom :: [SevenSegmentDigit] -> Mapping
 inferMappingFrom signals =
   ( infer 9 (lastMissingMapping signals)
       . infer 0 (segmentsInCommonWithDigitAmongSignalsOfLength signals 4 5 6)
@@ -70,7 +72,9 @@ infer mappingEntry inferenceStrategy previousMapping = set (element mappingEntry
 
 -- | A few symbols have a unique number of segments in common with other symbols of a certain length.
 segmentsInCommonWithDigitAmongSignalsOfLength :: [SevenSegmentDigit] -> Int -> Int -> Int -> InferenceStrategy
-segmentsInCommonWithDigitAmongSignalsOfLength signals segmentNumber digit signalLength mapping = fromJust (find (\signal -> segmentNumber == length (map (intersect signal) mapping !! digit)) (signalsOfLength signalLength signals))
+segmentsInCommonWithDigitAmongSignalsOfLength signals segmentNumber digit signalLength mapping = fromJust (find (\signal -> segmentNumber == length (map (intersect signal) mapping !! digit)) signalsOfTargetLength)
+  where
+    signalsOfTargetLength = signalsOfLength signalLength signals
 
 -- | The symbol for 5 has 5 segments and has a unique number of segments in common with the symbols for 4 and 1, 3 and 1 respectively
 inferFive :: [SevenSegmentDigit] -> [SevenSegmentDigit] -> [SevenSegmentDigit]
