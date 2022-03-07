@@ -7,12 +7,14 @@ where
 import Control.Lens (element, set)
 import Data.List (elemIndex, find, intersect, sort, (\\))
 import Data.List.Split (splitOn)
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, listToMaybe)
 import Day04 (PuzzleInput)
 import Util (toNumberOfBase)
 import Prelude
 
 type SevenSegmentDigit = String
+
+type InferenceStrategy = [SevenSegmentDigit] -> SevenSegmentDigit
 
 -- ######### Part One #########
 solutionDay8Part1 :: PuzzleInput -> Int
@@ -45,33 +47,50 @@ inferMappingFrom signals =
   ( infer 9 (lastMissingMapping signals)
       . infer 0 (segmentsInCommonWithDigitAmongSignalsOfLength signals 4 5 6)
       . inferFive signals
-      . infer 6 (segmentsInCommonWithDigitAmongSignalsOfLength signals 1 1 6)
-      . infer 3 (segmentsInCommonWithDigitAmongSignalsOfLength signals 2 1 5)
-      . infer 2 (segmentsInCommonWithDigitAmongSignalsOfLength signals 2 4 5)
-      . infer 8 (isOfUniqueLength signals 7)
-      . infer 7 (isOfUniqueLength signals 3)
-      . infer 4 (isOfUniqueLength signals 4)
-      . infer 1 (isOfUniqueLength signals 2)
+      . inferThroughCommonSegmentsWithUniques signals
+      . inferUniqueSegmentCounts signals
   )
     emptyMapping
 
-infer :: Int -> ([SevenSegmentDigit] -> SevenSegmentDigit) -> [SevenSegmentDigit] -> [SevenSegmentDigit]
+inferThroughCommonSegmentsWithUniques :: [SevenSegmentDigit] -> [SevenSegmentDigit] -> [SevenSegmentDigit]
+inferThroughCommonSegmentsWithUniques signals =
+  infer 6 (segmentsInCommonWithDigitAmongSignalsOfLength signals 1 1 6)
+    . infer 3 (segmentsInCommonWithDigitAmongSignalsOfLength signals 2 1 5)
+    . infer 2 (segmentsInCommonWithDigitAmongSignalsOfLength signals 2 4 5)
+
+inferUniqueSegmentCounts :: [SevenSegmentDigit] -> [SevenSegmentDigit] -> [SevenSegmentDigit]
+inferUniqueSegmentCounts signals =
+  infer 8 (isOfUniqueLength signals 7)
+    . infer 7 (isOfUniqueLength signals 3)
+    . infer 4 (isOfUniqueLength signals 4)
+    . infer 1 (isOfUniqueLength signals 2)
+
+infer :: Int -> InferenceStrategy -> [SevenSegmentDigit] -> [SevenSegmentDigit]
 infer mappingEntry inferenceStrategy previousMapping = set (element mappingEntry) (inferenceStrategy previousMapping) previousMapping
 
 segmentsInCommonWithDigitAmongSignalsOfLength :: [SevenSegmentDigit] -> Int -> Int -> Int -> [SevenSegmentDigit] -> SevenSegmentDigit
 segmentsInCommonWithDigitAmongSignalsOfLength signals segmentNumber digit signalLength mapping = fromJust (find (\signal -> segmentNumber == length (map (intersect signal) mapping !! digit)) (signalsOfLength signalLength signals))
 
 inferFive :: [SevenSegmentDigit] -> [SevenSegmentDigit] -> [SevenSegmentDigit]
-inferFive signals mapping = (set (element 5) $ fromJust $ find (certainDigitsInCommonWith1And4 mapping) $ signalsOfLength 5 signals) mapping
+inferFive signals mapping = set (element 5) (fromJust (find (certainDigitsInCommonWith1And4 mapping) (signalsOfLength 5 signals))) mapping
 
-certainDigitsInCommonWith1And4 :: Eq a => [[a]] -> [a] -> Bool
-certainDigitsInCommonWith1And4 mapping relevantSignals = 3 == length (map (intersect relevantSignals) mapping !! 4) && 1 == length (map (intersect relevantSignals) mapping !! 1)
+certainDigitsInCommonWith1And4 :: [SevenSegmentDigit] -> SevenSegmentDigit -> Bool
+certainDigitsInCommonWith1And4 mapping relevantSignals = 3 == length (segmentsInCommonWith 4) && 1 == length (segmentsInCommonWith 1)
+  where
+    segmentsInCommonWith n = map (intersect relevantSignals) mapping !! n
 
-isOfUniqueLength :: [SevenSegmentDigit] -> Int -> [SevenSegmentDigit] -> SevenSegmentDigit
-isOfUniqueLength signals targetLength = const $ fromJust (find (hasLength targetLength) signals)
+-- | Certain numbers are rendered with a unique number of segments on seven segment displays
+isOfUniqueLength :: [SevenSegmentDigit] -> Int -> InferenceStrategy
+isOfUniqueLength signals targetLength
+  | Just signalOfTargetLength <- find (hasLength targetLength) signals = const signalOfTargetLength
+  | otherwise = error "Failed to find an inference strategy because no signal of relevant length was found"
 
-lastMissingMapping :: [SevenSegmentDigit] -> [SevenSegmentDigit] -> SevenSegmentDigit
-lastMissingMapping signals mapping = head (signals \\ mapping)
+-- | There is only one mapping which cannot be inferred through segment numbers very easily, so it must be the
+-- missing one.
+lastMissingMapping :: [SevenSegmentDigit] -> InferenceStrategy
+lastMissingMapping signals mapping
+  | Just firstMissingMapping <- listToMaybe (signals \\ mapping) = firstMissingMapping
+  | otherwise = error "Failed to find an inference strategy because there was no missing mapping"
 
 signalsOfLength :: Int -> [SevenSegmentDigit] -> [SevenSegmentDigit]
 signalsOfLength targetLength = filter (hasLength targetLength)
@@ -108,4 +127,4 @@ prepareInput2 = map (map (map sort . words) . splitOn " | ")
 --  UPDATE: one correct rule set is:
 --    - its a 6 if it has 6 segments and it has 1 segment in common with 1
 --    - its a 0 if it has 6 segments and it has 4 segments in common with 5
---    - its a 9 if it has 6 segments and its the only number noch previously inferred
+--    - its a 9 if it has 6 segments and its the only number not previously inferred
