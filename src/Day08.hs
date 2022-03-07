@@ -68,9 +68,11 @@ inferUniqueSegmentCounts signals =
 infer :: Int -> InferenceStrategy -> [SevenSegmentDigit] -> [SevenSegmentDigit]
 infer mappingEntry inferenceStrategy previousMapping = set (element mappingEntry) (inferenceStrategy previousMapping) previousMapping
 
-segmentsInCommonWithDigitAmongSignalsOfLength :: [SevenSegmentDigit] -> Int -> Int -> Int -> [SevenSegmentDigit] -> SevenSegmentDigit
+-- | A few symbols have a unique number of segments in common with other symbols of a certain length.
+segmentsInCommonWithDigitAmongSignalsOfLength :: [SevenSegmentDigit] -> Int -> Int -> Int -> InferenceStrategy
 segmentsInCommonWithDigitAmongSignalsOfLength signals segmentNumber digit signalLength mapping = fromJust (find (\signal -> segmentNumber == length (map (intersect signal) mapping !! digit)) (signalsOfLength signalLength signals))
 
+-- | The symbol for 5 has 5 segments and has a unique number of segments in common with the symbols for 4 and 1, 3 and 1 respectively
 inferFive :: [SevenSegmentDigit] -> [SevenSegmentDigit] -> [SevenSegmentDigit]
 inferFive signals mapping = set (element 5) (fromJust (find (certainDigitsInCommonWith1And4 mapping) (signalsOfLength 5 signals))) mapping
 
@@ -85,8 +87,8 @@ isOfUniqueLength signals targetLength
   | Just signalOfTargetLength <- find (hasLength targetLength) signals = const signalOfTargetLength
   | otherwise = error "Failed to find an inference strategy because no signal of relevant length was found"
 
--- | There is only one mapping which cannot be inferred through segment numbers very easily, so it must be the
--- missing one.
+-- | There is only one symbol, 9, which cannot be inferred through segment numbers or comparisons with other segments very easily.
+-- Because of that it can be assumed that it is the only empty mapping left after all the other symbols have been inferred.
 lastMissingMapping :: [SevenSegmentDigit] -> InferenceStrategy
 lastMissingMapping signals mapping
   | Just firstMissingMapping <- listToMaybe (signals \\ mapping) = firstMissingMapping
@@ -100,7 +102,7 @@ signalsOfLength targetLength = filter (hasLength targetLength)
 emptyMapping :: [String]
 emptyMapping = replicate 10 ""
 
-hasLength :: Foldable t => Int -> t a -> Bool
+hasLength :: Int -> [a] -> Bool
 hasLength n list = length list == n
 
 prepareInput2 :: PuzzleInput -> [[[String]]]
