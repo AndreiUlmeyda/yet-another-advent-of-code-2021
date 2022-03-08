@@ -15,6 +15,7 @@ import Test.Hspec
     shouldBe,
   )
 
+-- runtime: 60ms - 90ms
 spec :: Spec
 spec = do
   describe "playing bingo" $ do

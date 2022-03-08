@@ -12,6 +12,7 @@ import Test.Hspec
     shouldBe,
   )
 
+-- runtime: 120ms - 160ms
 spec :: Spec
 spec = do
   describe "modeling lanternfish populations" $ do

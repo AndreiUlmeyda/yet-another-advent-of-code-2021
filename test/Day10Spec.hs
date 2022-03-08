@@ -13,6 +13,7 @@ import Test.Hspec
     shouldBe,
   )
 
+-- runtime: 5ms - 15ms
 spec :: Spec
 spec = do
   describe "scoring corrupted lines" $ do

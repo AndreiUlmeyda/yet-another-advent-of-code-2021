@@ -12,6 +12,7 @@ import Test.Hspec
     shouldBe,
   )
 
+-- runtime: 15ms - 30ms
 spec :: Spec
 spec = do
   describe "interpreting seven segment displays" $ do

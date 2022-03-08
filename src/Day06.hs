@@ -43,9 +43,7 @@ solutionDay6Part2 :: PuzzleInput -> Int
 solutionDay6Part2 = sum . map snd . (!! 256) . iterate ageAndMultiplyImproved . supplyMissingIndices zeroCounts . map toElementAndLength . group . sort . prepareInput
 
 supplyMissingIndices :: [(Int, Int)] -> [(Int, Int)] -> [(Int, Int)]
-supplyMissingIndices defaults [] = defaults
-supplyMissingIndices defaults [tuple] = set (element (fst tuple)) tuple defaults
-supplyMissingIndices defaults (tuple : rest) = supplyMissingIndices (set (element (fst tuple)) tuple defaults) rest
+supplyMissingIndices = foldl (\defaults elementAndLength -> set (element (fst elementAndLength)) elementAndLength defaults)
 
 zeroCounts :: [(Int, Int)]
 zeroCounts = zip [0 .. 8] (repeat 0)

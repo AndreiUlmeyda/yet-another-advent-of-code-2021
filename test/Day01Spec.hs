@@ -6,6 +6,7 @@ import Day01
   )
 import Test.Hspec (Spec, context, describe, it, shouldBe)
 
+-- runtime: 10ms - 20ms
 spec :: Spec
 spec = do
   describe "interpreting sonar data" $ do

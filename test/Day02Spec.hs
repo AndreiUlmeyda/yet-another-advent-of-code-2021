@@ -17,6 +17,7 @@ import Test.Hspec
     shouldBe,
   )
 
+-- runtime: 10ms - 20ms
 spec :: Spec
 spec = do
   describe "computing a final position from steering commands" $ do

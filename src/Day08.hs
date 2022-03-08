@@ -78,7 +78,9 @@ segmentsInCommonWithDigitAmongSignalsOfLength signals segmentNumber digit signal
 
 -- | The symbol for 5 has 5 segments and has a unique number of segments in common with the symbols for 4 and 1, 3 and 1 respectively
 inferFive :: [SevenSegmentDigit] -> [SevenSegmentDigit] -> [SevenSegmentDigit]
-inferFive signals mapping = set (element 5) (fromJust (find (certainDigitsInCommonWith1And4 mapping) (signalsOfLength 5 signals))) mapping
+inferFive signals mapping = set (element 5) (fromJust firstFiveSegmentSignalWithCorrectRelationTo4And1) mapping
+  where
+    firstFiveSegmentSignalWithCorrectRelationTo4And1 = find (certainDigitsInCommonWith1And4 mapping) (signalsOfLength 5 signals)
 
 certainDigitsInCommonWith1And4 :: [SevenSegmentDigit] -> SevenSegmentDigit -> Bool
 certainDigitsInCommonWith1And4 mapping relevantSignals = 3 == length (segmentsInCommonWith 4) && 1 == length (segmentsInCommonWith 1)

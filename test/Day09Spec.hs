@@ -12,6 +12,7 @@ import Test.Hspec
     shouldBe,
   )
 
+-- runtime: 70ms - 90ms
 spec :: Spec
 spec = do
   describe "assessing danger through smoke" $ do

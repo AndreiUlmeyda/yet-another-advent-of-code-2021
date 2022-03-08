@@ -15,6 +15,7 @@ import Test.Hspec
     shouldBe,
   )
 
+-- runtime: 280ms - 300ms
 spec :: Spec
 spec = do
   describe "avoiding hydrothermal vents" $ do
