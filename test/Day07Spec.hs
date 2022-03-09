@@ -12,7 +12,8 @@ import Test.Hspec
     shouldBe,
   )
 
--- runtime: 700ms - 800ms
+-- runtime: 700ms - 800ms ... except
+-- after naive 'parMap rdeepseq' -> 140ms - 160ms
 spec :: Spec
 spec = do
   describe "aligning battle crabs" $ do

@@ -4,6 +4,7 @@ module Day07
   )
 where
 
+import Control.Parallel.Strategies (parMap, rdeepseq)
 import Data.List.Split (splitOn)
 import Day04 (PuzzleInput)
 import Prelude
@@ -24,7 +25,7 @@ prepareInput :: PuzzleInput -> [CrabPosition]
 prepareInput = map read . splitOn "," . head
 
 cheapestAlignmentWith :: CostFunction -> [CrabPosition] -> AlignmentCost
-cheapestAlignmentWith costFunction crabPositions = minimum $ map (alignAtPosition costFunction crabPositions) possiblePositions
+cheapestAlignmentWith costFunction crabPositions = minimum $ parMap rdeepseq (alignAtPosition costFunction crabPositions) possiblePositions
   where
     possiblePositions = [(minimum crabPositions) .. (maximum crabPositions)]
 
