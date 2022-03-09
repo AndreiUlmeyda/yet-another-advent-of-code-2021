@@ -39,5 +39,10 @@ alignmentCost target crabPosition = abs (target - crabPosition)
 solutionDay7Part2 :: PuzzleInput -> AlignmentCost
 solutionDay7Part2 = cheapestAlignmentWith increasedAlignmentCost . prepareInput
 
+-- | The alignment cost function for part two is a partial sum of the natural numbers.
+-- These are related to, for instance, triangle numbers https://en.wikipedia.org/wiki/Triangular_number
+-- and can be computed more efficiently than naively building up the list summing it up.
 increasedAlignmentCost :: CrabPosition -> TargetPosition -> AlignmentCost
-increasedAlignmentCost target crabPosition = sum $ take (alignmentCost target crabPosition) [1 ..]
+increasedAlignmentCost target crabPosition = (n * (n + 1)) `div` 2
+  where
+    n = alignmentCost target crabPosition

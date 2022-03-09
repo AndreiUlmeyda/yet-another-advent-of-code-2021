@@ -13,7 +13,8 @@ import Test.Hspec
   )
 
 -- runtime: 700ms - 800ms ... except
--- after naive 'parMap rdeepseq' -> 140ms - 160ms
+-- after naive 'parMap rdeepseq' -> 140ms - 160ms ... except
+-- after computing the alignment cost for part 2 non-idiotically -> 25ms - 50ms
 spec :: Spec
 spec = do
   describe "aligning battle crabs" $ do
