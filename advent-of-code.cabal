@@ -42,7 +42,8 @@ library
       TupleSections, MultiWayIf, DerivingStrategies
   ghc-options: -O2 -Wall -Wincomplete-uni-patterns -Wmonomorphism-restriction -Wimplicit-prelude -Wmissing-local-signatures -Wmissing-export-lists -Wmissing-home-modules -Widentities -Wredundant-constraints -Wpartial-fields -Wcpp-undef -Wmissing-deriving-strategies -Wunused-packages -Wunused-type-patterns -Wcompat
   build-depends:
-      base >=4.7 && <5
+      array
+    , base >=4.7 && <5
     , containers
     , extra
     , lens
@@ -58,9 +59,10 @@ executable advent-of-code-exe
       app
   default-extensions:
       TupleSections, MultiWayIf, DerivingStrategies
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -eventlog
   build-depends:
       advent-of-code
+    , array
     , base >=4.7 && <5
     , containers
     , extra
@@ -92,6 +94,7 @@ test-suite advent-of-code-test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       advent-of-code
+    , array
     , base >=4.7 && <5
     , containers
     , extra
