@@ -3,41 +3,74 @@ module Day11
     solutionDay11Part2,
     increaseOctopusEnergies,
     Octopus (MkOctopus),
+    resolveFlashes,
   )
 where
 
-import Data.Array (Array, elems, listArray)
 import Data.Char (digitToInt)
+import Data.Map
+  ( Map,
+    adjust,
+    elems,
+    fromList,
+  )
 import Data.Maybe (fromJust, isJust)
 import Day04 (PuzzleInput)
 import Prelude
 
 data Octopus = MkOctopus
   { energyLevel :: Int,
-    numberOfFlashes :: Int
+    numberOfFlashes :: Int,
+    didFlashThisStep :: Bool
   }
   deriving stock (Show, Eq)
 
-type OctopusArray = Array Int Octopus
+type OctopusArray = Map (Int, Int) Octopus
 
-initialNumberOfFlashes :: Int
-initialNumberOfFlashes = 0
+type CoordinatePoint = (Int, Int)
+
+type NeighboringCoordinatePoint = CoordinatePoint
+
+zeroInitialFlashCount :: Int
+zeroInitialFlashCount = 0
+
+zeroEnergy :: Int
+zeroEnergy = 0
+
+flashingThreshold :: Int
+flashingThreshold = 9
+
+initialFlashedStatus :: Bool
+initialFlashedStatus = False
 
 parseOctopus :: Int -> Maybe Octopus
-parseOctopus initialEnergyLevel
-  | initialEnergyLevel >= 0,
-    initialEnergyLevel <= 9 =
-    Just $ MkOctopus initialEnergyLevel initialNumberOfFlashes
+parseOctopus energyLevelFromInput
+  | energyLevelFromInput >= 0,
+    energyLevelFromInput <= 9 =
+    Just $ MkOctopus energyLevelFromInput zeroInitialFlashCount initialFlashedStatus
   | otherwise = Nothing
 
 parseInput :: PuzzleInput -> OctopusArray
 parseInput puzzleInput
-  | all isJust resultingOctopusList = listArray (inputSizeX, inputSizeY) $ map fromJust resultingOctopusList
+  | all isJust resultingOctopusList = fromList (zip [(a, b) | a <- [0 .. inputSizeX], b <- [0 .. inputSizeY]] (map fromJust resultingOctopusList))
   | otherwise = error "Error: The input needs to consist of digits only."
   where
     resultingOctopusList = map (parseOctopus . digitToInt) (concat puzzleInput)
     inputSizeX = length puzzleInput
     inputSizeY = length $ head puzzleInput
+
+neighboringCoordinates :: CoordinatePoint -> [NeighboringCoordinatePoint]
+neighboringCoordinates (xCoord, yCoord) =
+  [(xCoord, yCoord + 1), (xCoord, yCoord -1), (xCoord + 1, yCoord), (xCoord - 1, yCoord)]
+
+incrementCoordinates :: OctopusArray -> [CoordinatePoint] -> OctopusArray
+incrementCoordinates octopuses [] = octopuses
+incrementCoordinates octopuses (coord : rest) = incrementCoordinates incrementedCoordinate rest
+  where
+    incrementedCoordinate = adjust incrementEnergy coord octopuses
+
+incrementEnergy :: Octopus -> Octopus
+incrementEnergy (MkOctopus energy numFlashes didFlash) = MkOctopus (energy + 1) numFlashes didFlash
 
 -- ######### Part One #########
 solutionDay11Part1 :: PuzzleInput -> Int
@@ -47,10 +80,20 @@ increaseOctopusEnergies :: OctopusArray -> OctopusArray
 increaseOctopusEnergies = fmap increaseOctopusEnergy
 
 increaseOctopusEnergy :: Octopus -> Octopus
-increaseOctopusEnergy (MkOctopus energy flashCount) = MkOctopus (energy + 1) flashCount
+increaseOctopusEnergy (MkOctopus energy flashCount flashStatus) = MkOctopus (energy + 1) flashCount flashStatus
 
 resolveFlashes :: OctopusArray -> OctopusArray
-resolveFlashes = id
+resolveFlashes octopuses
+  | unresolvedFlashes = error ""
+  | otherwise = fmap resetEnergy octopuses
+  where
+    unresolvedFlashes = any aboveThresholdButNotFlashed (elems octopuses)
+    aboveThresholdButNotFlashed octopus = energyLevel octopus > flashingThreshold && not (didFlashThisStep octopus)
+
+resetEnergy :: Octopus -> Octopus
+resetEnergy (MkOctopus energy flashCount flashStatus)
+  | energy >= flashingThreshold = MkOctopus energy flashCount True
+  | otherwise = MkOctopus energy flashCount flashStatus
 
 countFlashes :: OctopusArray -> Int
 countFlashes = sum . elems . fmap numberOfFlashes
@@ -61,3 +104,8 @@ solutionDay11Part2 = const 0
 
 -- instead of increasing + resetting each step I probably need to
 -- first increase, then resolve flashes
+
+-- resolve flashes in multiple steps
+-- 1. increment neighbors when origin is above threshold
+--    mark origin as having flashed
+--    repeat until no octopus is left which is above threshold and is not marked as having flashed
