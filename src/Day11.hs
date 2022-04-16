@@ -8,11 +8,14 @@ module Day11
 where
 
 import Data.Char (digitToInt)
-import Data.Map
+import Data.Map as M
   ( Map,
     adjust,
+    elemAt,
     elems,
+    filter,
     fromList,
+    update,
   )
 import Data.Maybe (fromJust, isJust)
 import Day04 (PuzzleInput)
@@ -23,7 +26,13 @@ data Octopus = MkOctopus
     numberOfFlashes :: Int,
     didFlashThisStep :: Bool
   }
-  deriving stock (Show, Eq)
+  deriving stock (Eq)
+
+-- instance Show Octopus where
+--   show octopus = (show . energyLevel) octopus ++ ":" ++ (show . numberOfFlashes) octopus
+
+instance Show Octopus where
+  show = show . energyLevel
 
 type OctopusArray = Map (Int, Int) Octopus
 
@@ -61,7 +70,15 @@ parseInput puzzleInput
 
 neighboringCoordinates :: CoordinatePoint -> [NeighboringCoordinatePoint]
 neighboringCoordinates (xCoord, yCoord) =
-  [(xCoord, yCoord + 1), (xCoord, yCoord -1), (xCoord + 1, yCoord), (xCoord - 1, yCoord)]
+  [ (xCoord, yCoord + 1),
+    (xCoord, yCoord -1),
+    (xCoord + 1, yCoord),
+    (xCoord - 1, yCoord),
+    (xCoord + 1, yCoord + 1),
+    (xCoord - 1, yCoord + 1),
+    (xCoord + 1, yCoord - 1),
+    (xCoord - 1, yCoord - 1)
+  ]
 
 incrementCoordinates :: OctopusArray -> [CoordinatePoint] -> OctopusArray
 incrementCoordinates octopuses [] = octopuses
@@ -73,7 +90,7 @@ incrementEnergy :: Octopus -> Octopus
 incrementEnergy (MkOctopus energy numFlashes didFlash) = MkOctopus (energy + 1) numFlashes didFlash
 
 -- ######### Part One #########
-solutionDay11Part1 :: PuzzleInput -> Int
+-- solutionDay11Part1 :: PuzzleInput -> Int
 solutionDay11Part1 = countFlashes . (!! 100) . iterate (resolveFlashes . increaseOctopusEnergies) . parseInput
 
 increaseOctopusEnergies :: OctopusArray -> OctopusArray
@@ -83,16 +100,25 @@ increaseOctopusEnergy :: Octopus -> Octopus
 increaseOctopusEnergy (MkOctopus energy flashCount flashStatus) = MkOctopus (energy + 1) flashCount flashStatus
 
 resolveFlashes :: OctopusArray -> OctopusArray
-resolveFlashes octopuses
-  | unresolvedFlashes = error ""
-  | otherwise = fmap resetEnergy octopuses
+resolveFlashes = fmap resetEnergy . flashAndIncreaseEnergies
+
+flashAndIncreaseEnergies :: OctopusArray -> OctopusArray
+flashAndIncreaseEnergies octopuses
+  | not (any aboveThresholdButNotFlashed octopuses) = octopuses
+  | otherwise = flashAndIncreaseEnergies $ flashFirstAboveThreshold octopuses
   where
-    unresolvedFlashes = any aboveThresholdButNotFlashed (elems octopuses)
+    aboveThresholdButNotFlashed octopus = energyLevel octopus > flashingThreshold && not (didFlashThisStep octopus)
+
+flashFirstAboveThreshold :: OctopusArray -> OctopusArray
+flashFirstAboveThreshold octopuses = markFlashed . incrementCoordinates octopuses $ neighboringCoordinates $ fst (elemAt 0 (M.filter aboveThresholdButNotFlashed octopuses))
+  where
+    markFlashed = update derp (fst (elemAt 0 (M.filter aboveThresholdButNotFlashed octopuses)))
+    derp (MkOctopus energy flashCount _) = Just $ MkOctopus energy flashCount True -- increase flashcount only at the end
     aboveThresholdButNotFlashed octopus = energyLevel octopus > flashingThreshold && not (didFlashThisStep octopus)
 
 resetEnergy :: Octopus -> Octopus
 resetEnergy (MkOctopus energy flashCount flashStatus)
-  | energy >= flashingThreshold = MkOctopus energy flashCount True
+  | energy > flashingThreshold = MkOctopus zeroEnergy (flashCount + 1) False
   | otherwise = MkOctopus energy flashCount flashStatus
 
 countFlashes :: OctopusArray -> Int
