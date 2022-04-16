@@ -28,9 +28,6 @@ data Octopus = MkOctopus
   }
   deriving stock (Eq)
 
--- instance Show Octopus where
---   show octopus = (show . energyLevel) octopus ++ ":" ++ (show . numberOfFlashes) octopus
-
 instance Show Octopus where
   show = show . energyLevel
 
@@ -113,7 +110,7 @@ flashFirstAboveThreshold :: OctopusArray -> OctopusArray
 flashFirstAboveThreshold octopuses = markFlashed . incrementCoordinates octopuses $ neighboringCoordinates $ fst (elemAt 0 (M.filter aboveThresholdButNotFlashed octopuses))
   where
     markFlashed = update derp (fst (elemAt 0 (M.filter aboveThresholdButNotFlashed octopuses)))
-    derp (MkOctopus energy flashCount _) = Just $ MkOctopus energy flashCount True -- increase flashcount only at the end
+    derp (MkOctopus energy flashCount _) = Just $ MkOctopus energy flashCount True
     aboveThresholdButNotFlashed octopus = energyLevel octopus > flashingThreshold && not (didFlashThisStep octopus)
 
 resetEnergy :: Octopus -> Octopus
