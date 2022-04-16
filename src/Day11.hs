@@ -56,8 +56,8 @@ parseInput puzzleInput
   | otherwise = error "Error: The input needs to consist of digits only."
   where
     resultingOctopusList = map (parseOctopus . digitToInt) (concat puzzleInput)
-    inputSizeX = length puzzleInput
-    inputSizeY = length $ head puzzleInput
+    inputSizeX = length puzzleInput - 1
+    inputSizeY = length (head puzzleInput) - 1
 
 neighboringCoordinates :: CoordinatePoint -> [NeighboringCoordinatePoint]
 neighboringCoordinates (xCoord, yCoord) =
