@@ -57,9 +57,9 @@ parseOctopus energyLevelFromInput
 neighboringCoordinates :: CoordinatePoint -> [NeighboringCoordinatePoint]
 neighboringCoordinates (xCoord, yCoord) = [(xCoord + x, yCoord + y) | x <- [-1 .. 1], y <- [-1 .. 1], not (x == 0 && y == 0)]
 
-incrementCoordinates :: OctopusArray -> [CoordinatePoint] -> OctopusArray
-incrementCoordinates octopuses [] = octopuses
-incrementCoordinates octopuses (coord : rest) = incrementCoordinates incrementedCoordinate rest
+incrementCoordinates :: [CoordinatePoint] -> OctopusArray -> OctopusArray
+incrementCoordinates [] octopuses = octopuses
+incrementCoordinates (coord : rest) octopuses = incrementCoordinates rest incrementedCoordinate
   where
     incrementedCoordinate = adjust incrementEnergy coord octopuses
 
@@ -99,10 +99,18 @@ aboveThresholdButNotFlashed :: Octopus -> Bool
 aboveThresholdButNotFlashed octopus = energyLevel octopus > flashingThreshold && not (didFlashThisStep octopus)
 
 flashFirstAboveThreshold :: OctopusArray -> OctopusArray
-flashFirstAboveThreshold octopuses = markFirstFlashed (incrementCoordinates octopuses (neighboringCoordinates firstUnFlashed))
+flashFirstAboveThreshold octopuses =
+  ( markFlashedAtCoordinate firstUnflashed . incrementCoordinates (neighboringCoordinates firstUnflashed)
+  )
+    octopuses
   where
-    markFirstFlashed = update (Just . markFlashed) firstUnFlashed
-    firstUnFlashed = fst (elemAt 0 (M.filter aboveThresholdButNotFlashed octopuses))
+    firstUnflashed = firstUnFlashedCoordinate octopuses
+
+markFlashedAtCoordinate :: CoordinatePoint -> OctopusArray -> OctopusArray
+markFlashedAtCoordinate = update (Just . markFlashed)
+
+firstUnFlashedCoordinate :: OctopusArray -> CoordinatePoint
+firstUnFlashedCoordinate octopuses = fst (elemAt 0 (M.filter aboveThresholdButNotFlashed octopuses))
 
 handleFlashedOctopus :: Octopus -> Octopus
 handleFlashedOctopus octopus
