@@ -17,7 +17,7 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
-  describe "" $ do
+  describe "counting octopus flashes" $ do
     context "with sample data for part 1" $
       it "should result in 1656" $ do
         sampleData <- lines <$> readFile "puzzle-inputs/day-11-sample"
@@ -26,6 +26,8 @@ spec = do
       it "should result in 1691" $ do
         actualData <- lines <$> readFile "puzzle-inputs/day-11"
         solutionDay11Part1 actualData `shouldBe` 1691
+
+  describe "finding the first synchronized flashing step" $ do
     context "with sample data for part 2" $
       it "should result in 195" $ do
         sampleData <- lines <$> readFile "puzzle-inputs/day-11-sample"

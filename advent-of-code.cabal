@@ -33,6 +33,7 @@ library
       Day09
       Day10
       Day11
+      Day12
       Util
   other-modules:
       Paths_advent_of_code
@@ -86,6 +87,7 @@ test-suite advent-of-code-test
       Day09Spec
       Day10Spec
       Day11Spec
+      Day12Spec
       Paths_advent_of_code
   hs-source-dirs:
       test
