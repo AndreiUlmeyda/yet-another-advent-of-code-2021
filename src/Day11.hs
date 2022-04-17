@@ -47,13 +47,6 @@ flashingThreshold = 9
 initialFlashedStatus :: Bool
 initialFlashedStatus = False
 
-parseOctopus :: Int -> Maybe Octopus
-parseOctopus energyLevelFromInput
-  | energyLevelFromInput >= 0,
-    energyLevelFromInput <= 9 =
-    Just $ MkOctopus energyLevelFromInput zeroInitialFlashCount initialFlashedStatus
-  | otherwise = Nothing
-
 neighboringCoordinates :: CoordinatePoint -> [NeighboringCoordinatePoint]
 neighboringCoordinates (xCoord, yCoord) = [(xCoord + x, yCoord + y) | x <- [-1 .. 1], y <- [-1 .. 1], not (x == 0 && y == 0)]
 
@@ -68,7 +61,10 @@ incrementEnergy (MkOctopus energy numFlashes didFlash) = MkOctopus (energy + 1) 
 
 -- ######### Part One #########
 solutionDay11Part1 :: PuzzleInput -> Int
-solutionDay11Part1 = sumUpFlashes . (!! 100) . simulateOctopuses . parseInput
+solutionDay11Part1 = sumUpFlashes . (!! targetStep) . simulateOctopuses . parseInput
+
+targetStep :: Int
+targetStep = 100
 
 parseInput :: PuzzleInput -> OctopusArray
 parseInput puzzleInput
@@ -83,6 +79,13 @@ parseInput puzzleInput
     resultingOctopusList = map (parseOctopus . digitToInt) (concat puzzleInput)
     inputSizeX = length puzzleInput
     inputSizeY = length (head puzzleInput)
+
+parseOctopus :: Int -> Maybe Octopus
+parseOctopus energyLevelFromInput
+  | energyLevelFromInput >= 0,
+    energyLevelFromInput <= 9 =
+    Just $ MkOctopus energyLevelFromInput zeroInitialFlashCount initialFlashedStatus
+  | otherwise = Nothing
 
 simulateOctopuses :: OctopusArray -> [OctopusArray]
 simulateOctopuses = iterate (fmap handleFlashedOctopus . flashAndIncreaseEnergies . fmap incrementOctopusEnergy)
