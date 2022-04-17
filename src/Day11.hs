@@ -126,7 +126,13 @@ sumUpFlashes = sum . fmap numberOfFlashes
 
 -- ######### Part Two #########
 solutionDay11Part2 :: PuzzleInput -> Int
-solutionDay11Part2 = const 0
+solutionDay11Part2 = length . takeWhile nonSimultaneousFlashes . simulateOctopuses . parseInput
+
+nonSimultaneousFlashes :: OctopusArray -> Bool
+nonSimultaneousFlashes = not . null . M.filter nonZeroEnergy
+
+nonZeroEnergy :: Octopus -> Bool
+nonZeroEnergy = (/=) zeroEnergy . energyLevel
 
 -- instead of increasing + resetting each step I probably need to
 -- first increase, then resolve flashes

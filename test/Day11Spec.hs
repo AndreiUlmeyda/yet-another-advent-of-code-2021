@@ -27,13 +27,13 @@ spec = do
         actualData <- lines <$> readFile "puzzle-inputs/day-11"
         solutionDay11Part1 actualData `shouldBe` 1691
     context "with sample data for part 2" $
-      it "should result in " $ do
+      it "should result in 195" $ do
         sampleData <- lines <$> readFile "puzzle-inputs/day-11-sample"
-        solutionDay11Part2 sampleData `shouldBe` 0
+        solutionDay11Part2 sampleData `shouldBe` 195
     context "with actual data for part 2" $
-      it "should result in " $ do
-        actualData <- lines <$> readFile "puzzle-inputs/day-10"
-        solutionDay11Part2 actualData `shouldBe` 0
+      it "should result in 216" $ do
+        actualData <- lines <$> readFile "puzzle-inputs/day-11"
+        solutionDay11Part2 actualData `shouldBe` 216
 
   describe "resolving flashes" $ do
     context "a single octopus below the threshold" $
