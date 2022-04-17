@@ -1,7 +1,6 @@
 module Day11
   ( solutionDay11Part1,
     solutionDay11Part2,
-    increaseOctopusEnergies,
     Octopus (MkOctopus),
     flashAndIncreaseEnergies,
   )
@@ -12,7 +11,6 @@ import Data.Map as M
   ( Map,
     adjust,
     elemAt,
-    elems,
     filter,
     fromList,
     update,
@@ -56,15 +54,6 @@ parseOctopus energyLevelFromInput
     Just $ MkOctopus energyLevelFromInput zeroInitialFlashCount initialFlashedStatus
   | otherwise = Nothing
 
-parseInput :: PuzzleInput -> OctopusArray
-parseInput puzzleInput
-  | all isJust resultingOctopusList = fromList (zip [(a, b) | a <- [0 .. inputSizeX], b <- [0 .. inputSizeY]] (map fromJust resultingOctopusList))
-  | otherwise = error "Error: The input needs to consist of digits only."
-  where
-    resultingOctopusList = map (parseOctopus . digitToInt) (concat puzzleInput)
-    inputSizeX = length puzzleInput - 1
-    inputSizeY = length (head puzzleInput) - 1
-
 neighboringCoordinates :: CoordinatePoint -> [NeighboringCoordinatePoint]
 neighboringCoordinates (xCoord, yCoord) = [(xCoord + x, yCoord + y) | x <- [-1 .. 1], y <- [-1 .. 1], not (x == 0 && y == 0)]
 
@@ -79,13 +68,27 @@ incrementEnergy (MkOctopus energy numFlashes didFlash) = MkOctopus (energy + 1) 
 
 -- ######### Part One #########
 solutionDay11Part1 :: PuzzleInput -> Int
-solutionDay11Part1 = countFlashes . (!! 100) . iterate (fmap resetEnergy . flashAndIncreaseEnergies . increaseOctopusEnergies) . parseInput
+solutionDay11Part1 = sumUpFlashes . (!! 100) . simulateOctopuses . parseInput
 
-increaseOctopusEnergies :: OctopusArray -> OctopusArray
-increaseOctopusEnergies = fmap increaseOctopusEnergy
+parseInput :: PuzzleInput -> OctopusArray
+parseInput puzzleInput
+  | all isJust resultingOctopusList =
+    fromList
+      ( zip
+          [(xCoords, yCoords) | xCoords <- [1 .. inputSizeX], yCoords <- [1 .. inputSizeY]]
+          (map fromJust resultingOctopusList)
+      )
+  | otherwise = error "Error: The input needs to consist of digits only."
+  where
+    resultingOctopusList = map (parseOctopus . digitToInt) (concat puzzleInput)
+    inputSizeX = length puzzleInput
+    inputSizeY = length (head puzzleInput)
 
-increaseOctopusEnergy :: Octopus -> Octopus
-increaseOctopusEnergy (MkOctopus energy flashCount flashStatus) = MkOctopus (energy + 1) flashCount flashStatus
+simulateOctopuses :: OctopusArray -> [OctopusArray]
+simulateOctopuses = iterate (fmap handleFlashedOctopus . flashAndIncreaseEnergies . fmap incrementOctopusEnergy)
+
+incrementOctopusEnergy :: Octopus -> Octopus
+incrementOctopusEnergy (MkOctopus energy flashCount flashStatus) = MkOctopus (energy + 1) flashCount flashStatus
 
 flashAndIncreaseEnergies :: OctopusArray -> OctopusArray
 flashAndIncreaseEnergies octopuses
@@ -98,17 +101,28 @@ aboveThresholdButNotFlashed octopus = energyLevel octopus > flashingThreshold &&
 flashFirstAboveThreshold :: OctopusArray -> OctopusArray
 flashFirstAboveThreshold octopuses = markFirstFlashed (incrementCoordinates octopuses (neighboringCoordinates firstUnFlashed))
   where
-    markFirstFlashed = update markFlashed firstUnFlashed
+    markFirstFlashed = update (Just . markFlashed) firstUnFlashed
     firstUnFlashed = fst (elemAt 0 (M.filter aboveThresholdButNotFlashed octopuses))
-    markFlashed (MkOctopus energy flashCount _) = Just $ MkOctopus energy flashCount True
+
+handleFlashedOctopus :: Octopus -> Octopus
+handleFlashedOctopus octopus
+  | energyLevel octopus > flashingThreshold = (resetEnergy . resetFlashStatus . incrementFlashCount) octopus
+  | otherwise = octopus
 
 resetEnergy :: Octopus -> Octopus
-resetEnergy (MkOctopus energy flashCount flashStatus)
-  | energy > flashingThreshold = MkOctopus zeroEnergy (flashCount + 1) False
-  | otherwise = MkOctopus energy flashCount flashStatus
+resetEnergy (MkOctopus _ flashCount flashStatus) = MkOctopus zeroEnergy flashCount flashStatus
 
-countFlashes :: OctopusArray -> Int
-countFlashes = sum . elems . fmap numberOfFlashes
+incrementFlashCount :: Octopus -> Octopus
+incrementFlashCount (MkOctopus energy flashCount flashStatus) = MkOctopus energy (flashCount + 1) flashStatus
+
+markFlashed :: Octopus -> Octopus
+markFlashed (MkOctopus energy flashCount _) = MkOctopus energy flashCount True
+
+resetFlashStatus :: Octopus -> Octopus
+resetFlashStatus (MkOctopus energy flashCount _) = MkOctopus energy flashCount False
+
+sumUpFlashes :: OctopusArray -> Int
+sumUpFlashes = sum . fmap numberOfFlashes
 
 -- ######### Part Two #########
 solutionDay11Part2 :: PuzzleInput -> Int

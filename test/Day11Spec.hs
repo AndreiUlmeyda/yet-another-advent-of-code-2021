@@ -4,7 +4,6 @@ import Data.Map (fromList, toList)
 import Day11
   ( Octopus (MkOctopus),
     flashAndIncreaseEnergies,
-    increaseOctopusEnergies,
     solutionDay11Part1,
     solutionDay11Part2,
   )
@@ -35,11 +34,6 @@ spec = do
       it "should result in " $ do
         actualData <- lines <$> readFile "puzzle-inputs/day-10"
         solutionDay11Part2 actualData `shouldBe` 0
-
-  describe "increasing octopus energy for one step" $ do
-    context "a single octopus" $
-      it "should just increment its value" $ do
-        increaseOctopusEnergies (fromList [((1, 1), MkOctopus 0 0 False)]) `shouldBe` fromList [((1, 1), MkOctopus 1 0 False)]
 
   describe "resolving flashes" $ do
     context "a single octopus below the threshold" $
