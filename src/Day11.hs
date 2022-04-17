@@ -66,16 +66,7 @@ parseInput puzzleInput
     inputSizeY = length (head puzzleInput) - 1
 
 neighboringCoordinates :: CoordinatePoint -> [NeighboringCoordinatePoint]
-neighboringCoordinates (xCoord, yCoord) =
-  [ (xCoord, yCoord + 1),
-    (xCoord, yCoord -1),
-    (xCoord + 1, yCoord),
-    (xCoord - 1, yCoord),
-    (xCoord + 1, yCoord + 1),
-    (xCoord - 1, yCoord + 1),
-    (xCoord + 1, yCoord - 1),
-    (xCoord - 1, yCoord - 1)
-  ]
+neighboringCoordinates (xCoord, yCoord) = [(xCoord + x, yCoord + y) | x <- [-1 .. 1], y <- [-1 .. 1], not (x == 0 && y == 0)]
 
 incrementCoordinates :: OctopusArray -> [CoordinatePoint] -> OctopusArray
 incrementCoordinates octopuses [] = octopuses
@@ -99,17 +90,17 @@ increaseOctopusEnergy (MkOctopus energy flashCount flashStatus) = MkOctopus (ene
 flashAndIncreaseEnergies :: OctopusArray -> OctopusArray
 flashAndIncreaseEnergies octopuses
   | not (any aboveThresholdButNotFlashed octopuses) = octopuses
-  | otherwise = flashAndIncreaseEnergies $ flashFirstAboveThreshold octopuses
-  where
-    aboveThresholdButNotFlashed octopus = energyLevel octopus > flashingThreshold && not (didFlashThisStep octopus)
+  | otherwise = flashAndIncreaseEnergies (flashFirstAboveThreshold octopuses)
+
+aboveThresholdButNotFlashed :: Octopus -> Bool
+aboveThresholdButNotFlashed octopus = energyLevel octopus > flashingThreshold && not (didFlashThisStep octopus)
 
 flashFirstAboveThreshold :: OctopusArray -> OctopusArray
-flashFirstAboveThreshold octopuses = markFirstFlashed . incrementCoordinates octopuses $ neighboringCoordinates firstUnFlashed
+flashFirstAboveThreshold octopuses = markFirstFlashed (incrementCoordinates octopuses (neighboringCoordinates firstUnFlashed))
   where
     markFirstFlashed = update markFlashed firstUnFlashed
     firstUnFlashed = fst (elemAt 0 (M.filter aboveThresholdButNotFlashed octopuses))
     markFlashed (MkOctopus energy flashCount _) = Just $ MkOctopus energy flashCount True
-    aboveThresholdButNotFlashed octopus = energyLevel octopus > flashingThreshold && not (didFlashThisStep octopus)
 
 resetEnergy :: Octopus -> Octopus
 resetEnergy (MkOctopus energy flashCount flashStatus)
