@@ -1,18 +1,25 @@
 module Day11Spec (spec) where
 
-import Data.Map (fromList, toList)
+import Data.Map as M
+  ( empty,
+    fromList,
+    toList,
+  )
 import Day11
   ( Octopus (MkOctopus),
     flashAndIncreaseEnergies,
+    parseInput,
     solutionDay11Part1,
     solutionDay11Part2,
   )
 import Test.Hspec
   ( Spec,
+    anyErrorCall,
     context,
     describe,
     it,
     shouldBe,
+    shouldThrow,
   )
 
 spec :: Spec
@@ -62,3 +69,16 @@ spec = do
         let a = fromList [((0, 1), MkOctopus 7 0 False), ((0, 2), MkOctopus 6 0 False), ((0, 3), MkOctopus 10 0 False), ((0, 4), MkOctopus 5 0 False), ((1, 1), MkOctopus 4 0 False), ((1, 2), MkOctopus 9 0 False), ((1, 3), MkOctopus 6 0 False), ((1, 4), MkOctopus 7 0 False)]
         let b = fromList [((0, 1), MkOctopus 8 0 False), ((0, 2), MkOctopus 8 0 False), ((0, 3), MkOctopus 11 0 True), ((0, 4), MkOctopus 6 0 False), ((1, 1), MkOctopus 5 0 False), ((1, 2), MkOctopus 10 0 True), ((1, 3), MkOctopus 8 0 False), ((1, 4), MkOctopus 8 0 False)]
         flashAndIncreaseEnergies a `shouldBe` b
+
+  describe "parsing input" $ do
+    context "given an empty input" $
+      it "should result in an empty Map" $ do
+        parseInput [] `shouldBe` M.empty
+    context "given two digits" $
+      it "should result two octopuses on the same rank" $ do
+        let twoOctopuses = fromList [((1, 1), MkOctopus 1 0 False), ((1, 2), MkOctopus 2 0 False)]
+        parseInput ["12"] `shouldBe` twoOctopuses
+    context "given 2 input rows" $
+      it "should increment the y-position of the second octopus" $ do
+        let octopusesOnTwoRows = fromList [((1, 1), MkOctopus 4 0 False), ((2, 1), MkOctopus 3 0 False)]
+        parseInput ["4", "3"] `shouldBe` octopusesOnTwoRows

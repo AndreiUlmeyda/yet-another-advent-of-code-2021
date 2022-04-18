@@ -3,6 +3,7 @@ module Day11
     solutionDay11Part2,
     Octopus (MkOctopus),
     flashAndIncreaseEnergies,
+    parseInput,
   )
 where
 
