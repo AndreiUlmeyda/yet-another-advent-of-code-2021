@@ -49,7 +49,8 @@ initialFlashedStatus :: Bool
 initialFlashedStatus = False
 
 neighboringCoordinates :: CoordinatePoint -> [NeighboringCoordinatePoint]
-neighboringCoordinates (xCoord, yCoord) = [(xCoord + x, yCoord + y) | x <- [-1 .. 1], y <- [-1 .. 1], not (x == 0 && y == 0)]
+neighboringCoordinates (xCoord, yCoord) =
+  [(xCoord + x, yCoord + y) | x <- [-1 .. 1], y <- [-1 .. 1], not (x == 0 && y == 0)]
 
 incrementCoordinates :: [CoordinatePoint] -> OctopusArray -> OctopusArray
 incrementCoordinates [] octopuses = octopuses
@@ -89,15 +90,19 @@ parseOctopus energyLevelFromInput
   | otherwise = Nothing
 
 simulateOctopuses :: OctopusArray -> [OctopusArray]
-simulateOctopuses = iterate (fmap handleFlashedOctopus . flashAndIncreaseEnergies . fmap incrementOctopusEnergy)
+simulateOctopuses =
+  iterate
+    ( fmap handleFlashedOctopus . flashAndIncreaseEnergies . fmap incrementOctopusEnergy
+    )
 
 incrementOctopusEnergy :: Octopus -> Octopus
-incrementOctopusEnergy (MkOctopus energy flashCount flashStatus) = MkOctopus (energy + 1) flashCount flashStatus
+incrementOctopusEnergy (MkOctopus energy flashCount flashStatus) =
+  MkOctopus (energy + 1) flashCount flashStatus
 
 flashAndIncreaseEnergies :: OctopusArray -> OctopusArray
 flashAndIncreaseEnergies octopuses
-  | not (any aboveThresholdButNotFlashed octopuses) = octopuses
-  | otherwise = flashAndIncreaseEnergies (flashFirstAboveThreshold octopuses)
+  | any aboveThresholdButNotFlashed octopuses = flashAndIncreaseEnergies (flashFirstAboveThreshold octopuses)
+  | otherwise = octopuses
 
 aboveThresholdButNotFlashed :: Octopus -> Bool
 aboveThresholdButNotFlashed octopus = energyLevel octopus > flashingThreshold && not (didFlashThisStep octopus)
