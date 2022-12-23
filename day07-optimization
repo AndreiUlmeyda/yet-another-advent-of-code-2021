@@ -1,0 +1,43 @@
+pre optimization
+
+	total time  =       23.97 secs   (81723 ticks @ 1000 us, 12 processors)
+	total alloc = 195,089,094,912 bytes  (excludes profiling overheads)
+
+COST CENTRE            MODULE    SRC                   %time %alloc
+
+increasedAlignmentCost Day07     src/Day07.hs:42:1-98   99.8  100.0
+
+---------------------------------------------------------------------------------------------------------------------
+compute partial sums of the natural numbers efficiently
+
+	total time  =        0.02 secs   (62 ticks @ 1000 us, 12 processors)
+	total alloc =  66,865,208 bytes  (excludes profiling overheads)
+
+COST CENTRE              MODULE                    SRC                                         %time %alloc
+
+alignmentCost            Day07                     src/Day07.hs:36:1-63                         41.9   45.1
+alignAtPosition          Day07                     src/Day07.hs:33:1-115                        38.7    0.2
+MAIN                     MAIN                      <built-in>                                    8.1    0.3
+increasedAlignmentCost   Day07                     src/Day07.hs:(43,1)-(45,41)                   4.8   45.1
+prepareInput             Day07                     src/Day07.hs:25:1-44                          3.2    6.0
+breakDelim.(...)         Data.List.Split.Internals src/Data/List/Split/Internals.hs:155:25-52    1.6    0.1
+increasedAlignmentCost.n Day07                     src/Day07.hs:45:5-41                          1.6    0.0
+main                     Main                      app/Main.hs:(6,1)-(8,38)                      0.0    1.0
+
+---------------------------------------------------------------------------------------------------------------------
+compute partial sums of the natural numbers efficiently + parMap
+
+	total time  =        0.30 secs   (1025 ticks @ 1000 us, 12 processors)
+	total alloc =  27,410,464 bytes  (excludes profiling overheads)
+
+COST CENTRE              MODULE                      SRC                                                %time %alloc
+
+alignAtPosition          Day07                       src/Day07.hs:33:1-115                               39.9    0.6
+increasedAlignmentCost   Day07                       src/Day07.hs:(43,1)-(45,41)                         31.8   29.4
+increasedAlignmentCost.n Day07                       src/Day07.hs:45:5-41                                18.0    0.0
+alignmentCost            Day07                       src/Day07.hs:36:1-63                                 9.3   42.3
+prepareInput             Day07                       src/Day07.hs:25:1-44                                 0.2   14.7
+rdeepseq                 Control.Parallel.Strategies Control/Parallel/Strategies.hs:450:1-38              0.1    1.1
+parMap                   Control.Parallel.Strategies Control/Parallel/Strategies.hs:616:1-48              0.1    1.5
+breakDelim               Data.List.Split.Internals   src/Data/List/Split/Internals.hs:(151,1)-(156,36)    0.0    1.8
+main                     Main                        app/Main.hs:(6,1)-(8,38)  
